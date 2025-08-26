@@ -1408,6 +1408,230 @@ app.post("/api/update-direct-debits", async (req, res) => {
 });
 
 /**
+ * Get current transfer recipients from HTML file
+ */
+app.get("/api/transfer-recipients", async (req, res) => {
+  try {
+    const fileType = req.query.fileType || "transfers";
+    console.log(`Loading transfer recipients for ${fileType}...`);
+
+    const $ = await loadHTMLFile(fileType);
+    const recipients = [];
+
+    // Extract recipients from the HTML table (only from the first instance to avoid duplicates)
+    $(".transfers-agenda-summary")
+      .first()
+      .find("table tbody tr")
+      .each((i, el) => {
+        const $row = $(el);
+        const alias = $row
+          .find(".transfers-agenda-table-row__alias-column p")
+          .text()
+          .trim();
+        const account = $row
+          .find(".transfers-agenda-table-row__account-column")
+          .text()
+          .trim();
+        const currency = $row
+          .find(".transfers-agenda-table-row__currency-column")
+          .text()
+          .trim();
+        const country = $row
+          .find(".transfers-agenda-table-row__country-column")
+          .text()
+          .trim();
+
+        if (alias && account) {
+          recipients.push({
+            id: `recipient_${Date.now()}_${i}`,
+            alias: alias,
+            account: account,
+            currency: currency || "€",
+            country: country || "ES",
+          });
+        }
+      });
+
+    console.log(`Found ${recipients.length} recipients`);
+
+    res.json({
+      success: true,
+      recipients: recipients,
+      message: `Found ${recipients.length} recipients`,
+    });
+  } catch (error) {
+    console.error("Error loading transfer recipients:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
+/**
+ * Update transfer recipients in HTML file
+ */
+app.post("/api/update-transfer-recipients", async (req, res) => {
+  try {
+    const {
+      recipients = [],
+      fileType = "transfers",
+      showEmptyState = false,
+    } = req.body;
+
+    if (!Array.isArray(recipients)) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid recipients data. Must be an array.",
+      });
+    }
+
+    console.log(`Updating transfer recipients for ${fileType}...`);
+    console.log(`Show empty state: ${showEmptyState}`);
+    console.log(`Number of recipients: ${recipients.length}`);
+
+    const filePath = path.join(__dirname, HTML_FILES[fileType]);
+    const htmlContent = await fs.readFile(filePath, "utf8");
+    const $ = cheerio.load(htmlContent);
+
+    // Find the transfers-landing-view__main-content container (only update the first one to avoid duplicates)
+    const mainContent = $(".transfers-landing-view__main-content").first();
+
+    if (mainContent.length === 0) {
+      throw new Error("Main content container not found in HTML file");
+    }
+
+    if (showEmptyState || recipients.length === 0) {
+      // Show empty state
+      mainContent.html(`
+        <article class="transfers-agenda-summary">
+          <header>
+            <div class="transfers-agenda-summary__title">
+              <div class="ok-box-title">
+                <h3 class="">Regular recipients</h3>
+                <span class="ok-box-title__separator"></span>
+              </div>
+            </div>
+          </header>
+          <article class="empty-state">
+            <div class="icon empty-state__image empty-state-transfer-banking"></div>
+            <div class="empty-state__primary-text empty-state__primary-text--with-margin">
+              You can use your List to save your frequent recipients and have rapid access when issuing new transfers.
+            </div>
+            <div class="empty-state__button">
+              <button type="button" class="buttons-base buttons-base--regular buttons-base--secondary">
+                <div>
+                  <div class="">
+                    <span class="buttons-base__children">
+                      <span>New recipient</span>
+                    </span>
+                  </div>
+                </div>
+              </button>
+            </div>
+          </article>
+        </article>
+      `);
+    } else {
+      // Generate recipients table HTML
+      const tableRows = recipients
+        .map(
+          (recipient, index) => `
+          <tr class="ok-table-row">
+            <td class="ok-table-cell transfers-agenda-table-row__expand-column">
+              <div class="ok-collapsing-toggler ok-collapsing-toggler--floating">
+                <i class="ok-icon-task ok-icon-task__standalone ok-icon-task__standalone--default icon-accordion-abrir"></i>
+              </div>
+            </td>
+            <td class="ok-table-cell transfers-agenda-table-row__alias-column">
+              <p class="transfers-agenda-table-row__description">${recipient.alias}</p>
+            </td>
+            <td class="ok-table-cell transfers-agenda-table-row__account-column">${recipient.account}</td>
+            <td class="ok-table-cell transfers-agenda-table-row__currency-column">${recipient.currency}</td>
+            <td class="ok-table-cell transfers-agenda-table-row__country-column">${recipient.country}</td>
+            <td class="ok-table-cell transfers-agenda-table-row__transfer-column">
+              <button type="button" class="buttons-base buttons-base--small buttons-base--secondary">
+                <div>
+                  <div class="">
+                    <span class="buttons-base__children">
+                      <span>Transfer</span>
+                    </span>
+                  </div>
+                </div>
+              </button>
+            </td>
+          </tr>
+        `
+        )
+        .join("");
+
+      // Create the full structure with recipients table
+      mainContent.html(`
+        <article class="transfers-agenda-summary">
+          <header>
+            <div class="transfers-agenda-summary__title pull-left">
+              <div class="ok-box-title">
+                <a class="ok-box-title__link-as-title" href="/myprofile/transfers/agenda">Regular recipients</a>
+                <span class="ok-box-title__separator"></span>
+              </div>
+            </div>
+            <div class="pull-right">
+              <button type="button" class="buttons-base buttons-base--regular buttons-base--ghost">
+                <div>
+                  <div class="">
+                    <i class="buttons-base__icon icon buttons-base__icon--left icon-agregar transfers-agenda__new-beneficiary-icon"></i>
+                    <span class="buttons-base__children">
+                      <span>New recipient</span>
+                    </span>
+                  </div>
+                </div>
+              </button>
+            </div>
+          </header>
+          <section>
+            <table class="ok-table">
+              <thead>
+                <tr class="ok-table-row ok-table-row--header">
+                  <th class="ok-table-cell ok-table-cell--header"><span></span></th>
+                  <th class="ok-table-cell ok-table-cell--header"><span>Alias</span></th>
+                  <th class="ok-table-cell ok-table-cell--header"><span>Destination account</span></th>
+                  <th class="ok-table-cell ok-table-cell--header"><span>Currency</span></th>
+                  <th class="ok-table-cell ok-table-cell--header"><span>Country</span></th>
+                  <th class="ok-table-cell ok-table-cell--header"><span></span></th>
+                </tr>
+              </thead>
+              <tbody>
+                ${tableRows}
+              </tbody>
+            </table>
+          </section>
+        </article>
+      `);
+    }
+
+    // Write the updated HTML back to file
+    await fs.writeFile(filePath, $.html());
+
+    console.log(`Transfer recipients updated successfully for ${fileType}`);
+
+    res.json({
+      success: true,
+      message: `Transfer recipients updated successfully. ${
+        showEmptyState
+          ? "Showing empty state."
+          : `Updated ${recipients.length} recipients.`
+      }`,
+    });
+  } catch (error) {
+    console.error("Error updating transfer recipients:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
+/**
  * Health check endpoint
  */
 app.get("/api/health", (req, res) => {

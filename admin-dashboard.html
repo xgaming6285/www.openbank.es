@@ -395,6 +395,72 @@
         display: flex;
         gap: 5px;
       }
+
+      /* Transfer Management Styles */
+      .transfer-management {
+        margin-top: 30px;
+        padding-top: 30px;
+        border-top: 1px solid #e9ecef;
+      }
+
+      .transfer-management h3 {
+        color: #002b45;
+        margin-bottom: 20px;
+        font-size: 1.5rem;
+      }
+
+      .recipient-controls {
+        margin-bottom: 20px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .recipients-table-container {
+        background: white;
+        border-radius: 8px;
+        overflow-x: auto;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .empty-state-transfer-banking {
+        width: 80px;
+        height: 80px;
+        background: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-6 0v4"/><rect x="2" y="9" width="20" height="11" rx="2" ry="2"/><circle cx="12" cy="15" r="1"/></svg>')
+          no-repeat center;
+        background-size: contain;
+        margin: 0 auto 20px;
+        color: #6c757d;
+      }
+
+      /* Recipient Form Modal */
+      .recipient-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+      }
+
+      .recipient-modal-content {
+        background: white;
+        border-radius: 10px;
+        padding: 30px;
+        max-width: 500px;
+        width: 90%;
+        max-height: 90%;
+        overflow-y: auto;
+      }
+
+      .recipient-form {
+        display: grid;
+        gap: 15px;
+      }
     </style>
   </head>
   <body>
@@ -528,6 +594,85 @@
           </div>
         </div>
 
+        <!-- Transfer Recipients Management Section -->
+        <div
+          class="transfer-management"
+          id="transferSection"
+          style="display: none"
+        >
+          <h3>💸 Transfer Recipients Management</h3>
+          <div class="transfer-management-container">
+            <!-- Recipients List -->
+            <div class="recipients-manager">
+              <div class="recipient-controls">
+                <button
+                  class="btn btn-success"
+                  onclick="showAddRecipientForm()"
+                >
+                  ➕ Add New Recipient
+                </button>
+                <button
+                  class="btn btn-secondary"
+                  onclick="toggleTransferEmptyState()"
+                >
+                  🔄 Toggle Empty State
+                </button>
+                <button
+                  class="btn btn-secondary"
+                  onclick="loadTransferRecipients()"
+                >
+                  📄 Load Current Recipients
+                </button>
+              </div>
+
+              <!-- Recipients Table -->
+              <div class="recipients-table-container">
+                <table class="preview-table" id="transferRecipientsTable">
+                  <thead>
+                    <tr>
+                      <th>Alias</th>
+                      <th>Destination Account</th>
+                      <th>Currency</th>
+                      <th>Country</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="transferRecipientsTableBody">
+                    <!-- Recipient rows will be populated here -->
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Empty State Preview -->
+              <div
+                class="empty-state-preview"
+                id="transferEmptyStatePreview"
+                style="display: none"
+              >
+                <div class="empty-state-box">
+                  <div
+                    class="icon empty-state__image empty-state-transfer-banking"
+                  ></div>
+                  <div
+                    class="empty-state__primary-text empty-state__primary-text--with-margin"
+                  >
+                    You can use your List to save your frequent recipients and
+                    have rapid access when issuing new transfers.
+                  </div>
+                  <div class="empty-state__button">
+                    <button
+                      class="btn btn-secondary"
+                      onclick="showAddRecipientForm()"
+                    >
+                      New recipient
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="actions">
           <button class="btn btn-secondary" onclick="loadCurrentValues()">
             🔄 Refresh Current Values
@@ -545,6 +690,14 @@
             style="display: none"
           >
             🏦 Apply Direct Debit Changes
+          </button>
+          <button
+            class="btn btn-success"
+            id="applyTransfersBtn"
+            onclick="applyTransferChanges()"
+            style="display: none"
+          >
+            💸 Apply Transfer Changes
           </button>
         </div>
       </div>
@@ -712,6 +865,59 @@
         ],
       };
 
+      // Transfer Recipients Management Configuration
+      fieldConfigs.transferManagement = {
+        emptyStateConfig: {
+          showEmpty: true,
+          emptyMessage:
+            "You can use your List to save your frequent recipients and have rapid access when issuing new transfers.",
+          className:
+            "empty-state__primary-text empty-state__primary-text--with-margin",
+        },
+        recipientFields: [
+          {
+            name: "alias",
+            label: "Alias",
+            type: "text",
+            required: true,
+            maxLength: 50,
+          },
+          {
+            name: "account",
+            label: "Destination Account",
+            type: "text",
+            required: true,
+            placeholder: "...2322",
+          },
+          {
+            name: "currency",
+            label: "Currency",
+            type: "select",
+            required: true,
+            options: [
+              { value: "€", label: "EUR (€)" },
+              { value: "$", label: "USD ($)" },
+              { value: "£", label: "GBP (£)" },
+            ],
+          },
+          {
+            name: "country",
+            label: "Country",
+            type: "select",
+            required: true,
+            options: [
+              { value: "ES", label: "Spain (ES)" },
+              { value: "FR", label: "France (FR)" },
+              { value: "DE", label: "Germany (DE)" },
+              { value: "IT", label: "Italy (IT)" },
+              { value: "PT", label: "Portugal (PT)" },
+              { value: "UK", label: "United Kingdom (UK)" },
+              { value: "US", label: "United States (US)" },
+            ],
+          },
+        ],
+      };
+
       fieldConfigs.cards = [
         {
           key: "cardLastDigits",
@@ -796,16 +1002,33 @@
           const applyDirectDebitsBtn = document.getElementById(
             "applyDirectDebitsBtn"
           );
+          const transferSection = document.getElementById("transferSection");
+          const applyTransfersBtn =
+            document.getElementById("applyTransfersBtn");
+
           if (
             selectedFileType === "directDebits" ||
             selectedFileType.includes("direct-debit")
           ) {
             directDebitSection.style.display = "block";
             applyDirectDebitsBtn.style.display = "inline-block";
+            transferSection.style.display = "none";
+            applyTransfersBtn.style.display = "none";
             loadDirectDebits();
+          } else if (
+            selectedFileType === "transfers" ||
+            selectedFileType.includes("transfer")
+          ) {
+            transferSection.style.display = "block";
+            applyTransfersBtn.style.display = "inline-block";
+            directDebitSection.style.display = "none";
+            applyDirectDebitsBtn.style.display = "none";
+            loadTransferRecipients();
           } else {
             directDebitSection.style.display = "none";
             applyDirectDebitsBtn.style.display = "none";
+            transferSection.style.display = "none";
+            applyTransfersBtn.style.display = "none";
           }
         } else {
           currentFileType = "";
@@ -813,6 +1036,10 @@
           document.getElementById("fileDescription").textContent =
             "Select a file to modify its balance values and save changes directly.";
           document.getElementById("directDebitSection").style.display = "none";
+          document.getElementById("transferSection").style.display = "none";
+          document.getElementById("applyDirectDebitsBtn").style.display =
+            "none";
+          document.getElementById("applyTransfersBtn").style.display = "none";
         }
       }
 
@@ -1367,6 +1594,257 @@
         return text.length > maxLength
           ? text.substring(0, maxLength) + "..."
           : text;
+      }
+
+      // Transfer Recipients Management Functions
+      let currentRecipients = [];
+      let currentRecipientId = null;
+      let isTransferEmptyState = false;
+
+      // Load current transfer recipients
+      async function loadTransferRecipients() {
+        try {
+          showStatus("Loading current recipients...", "info");
+
+          const response = await fetch(
+            `/api/transfer-recipients?fileType=${currentFileType}`
+          );
+          const data = await response.json();
+
+          if (data.success) {
+            currentRecipients = data.recipients || [];
+            renderRecipientsTable();
+            showStatus(
+              `Loaded ${currentRecipients.length} recipients`,
+              "success"
+            );
+          } else {
+            showStatus("Error loading recipients: " + data.error, "error");
+          }
+        } catch (error) {
+          showStatus("Error loading recipients: " + error.message, "error");
+        }
+      }
+
+      // Render recipients table
+      function renderRecipientsTable() {
+        const tbody = document.getElementById("transferRecipientsTableBody");
+        const emptyState = document.getElementById("transferEmptyStatePreview");
+        const tableContainer = document.querySelector(
+          ".recipients-table-container"
+        );
+
+        if (isTransferEmptyState || currentRecipients.length === 0) {
+          tbody.innerHTML = "";
+          tableContainer.style.display = "none";
+          emptyState.style.display = "block";
+          return;
+        }
+
+        tableContainer.style.display = "block";
+        emptyState.style.display = "none";
+
+        tbody.innerHTML = currentRecipients
+          .map(
+            (recipient, index) => `
+          <tr>
+            <td>${recipient.alias}</td>
+            <td>${recipient.account}</td>
+            <td>${recipient.currency}</td>
+            <td>${recipient.country}</td>
+            <td>
+              <div class="action-buttons">
+                <button class="btn btn-sm btn-secondary" onclick="editRecipient(${index})">✏️</button>
+                <button class="btn btn-sm btn-danger" onclick="deleteRecipient(${index})">🗑️</button>
+              </div>
+            </td>
+          </tr>
+        `
+          )
+          .join("");
+      }
+
+      // Toggle between empty state and recipients view
+      function toggleTransferEmptyState() {
+        isTransferEmptyState = !isTransferEmptyState;
+        renderRecipientsTable();
+
+        const statusText = isTransferEmptyState
+          ? "Showing empty state view"
+          : "Showing recipients view";
+        showStatus(statusText, "info");
+      }
+
+      // Show add recipient form
+      function showAddRecipientForm() {
+        currentRecipientId = null;
+        showRecipientModal();
+      }
+
+      // Show edit recipient form
+      function editRecipient(index) {
+        currentRecipientId = index;
+        const recipient = currentRecipients[index];
+        showRecipientModal(recipient);
+      }
+
+      // Delete recipient
+      function deleteRecipient(index) {
+        if (confirm("Are you sure you want to delete this recipient?")) {
+          currentRecipients.splice(index, 1);
+          renderRecipientsTable();
+          showStatus("Recipient deleted", "success");
+        }
+      }
+
+      // Show recipient modal
+      function showRecipientModal(recipient = null) {
+        const isEdit = recipient !== null;
+        const modalHtml = `
+          <div class="recipient-modal" id="recipientModal">
+            <div class="recipient-modal-content">
+              <h3>${isEdit ? "Edit Recipient" : "Add New Recipient"}</h3>
+              <form class="recipient-form" onsubmit="saveRecipient(event)">
+                <div class="form-group">
+                  <label for="recipientAlias">Alias *</label>
+                  <input type="text" id="recipientAlias" required maxlength="50"
+                         value="${
+                           recipient ? recipient.alias : ""
+                         }" placeholder="francisco">
+                </div>
+                
+                <div class="form-group">
+                  <label for="recipientAccount">Destination Account *</label>
+                  <input type="text" id="recipientAccount" required
+                         value="${
+                           recipient ? recipient.account : ""
+                         }" placeholder="...2322">
+                </div>
+                
+                <div class="form-group">
+                  <label for="recipientCurrency">Currency *</label>
+                  <select id="recipientCurrency" required>
+                    ${fieldConfigs.transferManagement.recipientFields[2].options
+                      .map(
+                        (option) => `
+                      <option value="${option.value}" ${
+                          recipient && recipient.currency === option.value
+                            ? "selected"
+                            : ""
+                        }>
+                        ${option.label}
+                      </option>
+                    `
+                      )
+                      .join("")}
+                  </select>
+                </div>
+                
+                <div class="form-group">
+                  <label for="recipientCountry">Country *</label>
+                  <select id="recipientCountry" required>
+                    ${fieldConfigs.transferManagement.recipientFields[3].options
+                      .map(
+                        (option) => `
+                      <option value="${option.value}" ${
+                          recipient && recipient.country === option.value
+                            ? "selected"
+                            : ""
+                        }>
+                        ${option.label}
+                      </option>
+                    `
+                      )
+                      .join("")}
+                  </select>
+                </div>
+                
+                <div class="form-actions">
+                  <button type="button" class="btn btn-secondary" onclick="closeRecipientModal()">Cancel</button>
+                  <button type="submit" class="btn btn-success">${
+                    isEdit ? "Update" : "Add"
+                  } Recipient</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        `;
+
+        document.body.insertAdjacentHTML("beforeend", modalHtml);
+      }
+
+      // Save recipient
+      function saveRecipient(event) {
+        event.preventDefault();
+
+        const recipientData = {
+          alias: document.getElementById("recipientAlias").value.trim(),
+          account: document.getElementById("recipientAccount").value.trim(),
+          currency: document.getElementById("recipientCurrency").value,
+          country: document.getElementById("recipientCountry").value,
+          id:
+            currentRecipientId !== null
+              ? currentRecipients[currentRecipientId].id
+              : `recipient_${Date.now()}`,
+        };
+
+        if (currentRecipientId !== null) {
+          // Update existing recipient
+          currentRecipients[currentRecipientId] = recipientData;
+          showStatus("Recipient updated successfully", "success");
+        } else {
+          // Add new recipient
+          currentRecipients.unshift(recipientData); // Add to beginning
+          showStatus("Recipient added successfully", "success");
+        }
+
+        renderRecipientsTable();
+        closeRecipientModal();
+      }
+
+      // Close recipient modal
+      function closeRecipientModal() {
+        const modal = document.getElementById("recipientModal");
+        if (modal) {
+          modal.remove();
+        }
+      }
+
+      // Apply transfer changes to HTML file
+      async function applyTransferChanges() {
+        if (!currentFileType) {
+          showStatus("Please select a file first", "error");
+          return;
+        }
+
+        try {
+          showLoading(true);
+          showStatus("Applying transfer changes...", "info");
+
+          const response = await fetch("/api/update-transfer-recipients", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              recipients: currentRecipients,
+              fileType: currentFileType,
+              showEmptyState: isTransferEmptyState,
+            }),
+          });
+
+          const data = await response.json();
+          showLoading(false);
+
+          if (data.success) {
+            showStatus("Transfer changes applied successfully!", "success");
+          } else {
+            showStatus("Error applying changes: " + data.error, "error");
+          }
+        } catch (error) {
+          showLoading(false);
+          showStatus("Error applying changes: " + error.message, "error");
+        }
       }
 
       // Note: Event listeners for fields are added dynamically in addFieldEventListeners()
