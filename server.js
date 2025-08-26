@@ -1196,6 +1196,218 @@ app.post("/api/update-balances", async (req, res) => {
 });
 
 /**
+ * Get current direct debit transactions from HTML file
+ */
+app.get("/api/direct-debits", async (req, res) => {
+  try {
+    const fileType = req.query.fileType || "directDebits";
+    console.log(`Loading direct debits for ${fileType}...`);
+
+    const $ = await loadHTMLFile(fileType);
+    const transactions = [];
+
+    // Extract transactions from the HTML table
+    $("table#account-box-body-last-movements tbody tr").each((i, el) => {
+      const $row = $(el);
+      const dateText = $row
+        .find(".account-last-movements-table-row__cell-date .label-date")
+        .text()
+        .trim();
+      const categoryImg = $row
+        .find(".account-last-movements-table-row__cell-category img")
+        .attr("src");
+      const description = $row
+        .find(".account-last-movements-table-row__cell-description span")
+        .text()
+        .trim();
+      const amount = $row
+        .find(".account-last-movements-table-row__cell-balance span span")
+        .first()
+        .text()
+        .trim();
+      const balance = $row
+        .find(".account-last-movements-table-row__cell-total-balance span span")
+        .first()
+        .text()
+        .trim();
+
+      if (dateText && description) {
+        // Extract category from image URL
+        const categoryMatch = categoryImg
+          ? categoryImg.match(/category_(\d+)\.png/)
+          : null;
+        const category = categoryMatch
+          ? `category_${categoryMatch[1]}`
+          : "category_9";
+
+        // Parse date (assuming current year)
+        const currentYear = new Date().getFullYear();
+        const dateStr = `${currentYear}-${convertDateToISO(dateText)}`;
+
+        transactions.push({
+          id: `txn_${Date.now()}_${i}`,
+          date: dateStr,
+          category: category,
+          description: description,
+          amount: parseFloat(amount.replace(/[€,\s]/g, "")) || 0,
+          balance: parseFloat(balance.replace(/[€,\s]/g, "")) || 0,
+        });
+      }
+    });
+
+    console.log(`Found ${transactions.length} transactions`);
+
+    res.json({
+      success: true,
+      transactions: transactions,
+      message: `Found ${transactions.length} transactions`,
+    });
+  } catch (error) {
+    console.error("Error loading direct debits:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
+/**
+ * Update direct debit transactions in HTML file
+ */
+app.post("/api/update-direct-debits", async (req, res) => {
+  try {
+    const {
+      transactions = [],
+      fileType = "directDebits",
+      showEmptyState = false,
+    } = req.body;
+
+    if (!Array.isArray(transactions)) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid transactions data. Must be an array.",
+      });
+    }
+
+    console.log(`Updating direct debits for ${fileType}...`);
+    console.log(`Show empty state: ${showEmptyState}`);
+    console.log(`Number of transactions: ${transactions.length}`);
+
+    const filePath = path.join(__dirname, HTML_FILES[fileType]);
+    const htmlContent = await fs.readFile(filePath, "utf8");
+    const $ = cheerio.load(htmlContent);
+
+    // Find the accounts-box-body__movements container
+    const movementsContainer = $(".accounts-box-body__movements");
+
+    if (movementsContainer.length === 0) {
+      throw new Error("Movements container not found in HTML file");
+    }
+
+    if (showEmptyState || transactions.length === 0) {
+      // Show empty state
+      movementsContainer.html(`
+        <article class="empty-state">
+          <div class="icon empty-state__image empty-state-search-banking"></div>
+          <div class="empty-state__primary-text empty-state__primary-text--with-margin">
+            Your account currently has no transactions.
+          </div>
+        </article>
+      `);
+    } else {
+      // Generate transaction table HTML
+      const tableRows = transactions
+        .map((transaction, index) => {
+          const isNegative = transaction.amount < 0;
+          const formattedAmount = isNegative
+            ? transaction.amount.toFixed(2)
+            : `+${transaction.amount.toFixed(2)}`;
+          const formattedBalance = transaction.balance.toFixed(2);
+          const dateFormatted = formatTransactionDate(transaction.date);
+          const categoryIcon = getCategoryIconUrl(transaction.category);
+
+          return `
+          <tr class="ok-table-row" id="account-box-body-last-movements-allItems-${index}">
+            <td class="ok-table-cell account-last-movements-table-row__cell-date">
+              <span class="label-date">${dateFormatted}</span>
+            </td>
+            <td class="ok-table-cell account-last-movements-table-row__cell-category">
+              <span><img class="" src="${categoryIcon}" alt="category"></span>
+            </td>
+            <td class="ok-table-cell account-last-movements-table-row__cell-description">
+              <span>${transaction.description}</span>
+            </td>
+            <td class="ok-table-cell account-last-movements-table-row__cell-deferrable"></td>
+            <td class="ok-table-cell account-last-movements-table-row__cell-balance">
+              <span class=""><span id="">${formattedAmount}</span>&nbsp;<span id="">€</span></span>
+            </td>
+            <td class="ok-table-cell account-last-movements-table-row__cell-total-balance">
+              <span class=""><span id="">${formattedBalance}</span>&nbsp;<span id="">€</span></span>
+            </td>
+          </tr>
+        `;
+        })
+        .join("");
+
+      // Create the full table structure
+      movementsContainer.html(`
+        <table class="ok-table last-movements-table" id="account-box-body-last-movements">
+          <thead>
+            <tr class="ok-table-row ok-table-row--header">
+              <th class="ok-table-cell ok-table-cell--header">
+                <span><span>Date</span></span>
+              </th>
+              <th class="ok-table-cell text-center ok-table-cell--header">
+                <span><span>Category</span></span>
+              </th>
+              <th class="ok-table-cell ok-table-cell--header">
+                <span>Description</span>
+              </th>
+              <th class="ok-table-cell ok-table-cell--header"></th>
+              <th class="ok-table-cell accounts-box-body__movements-header-second ok-table-cell--header">
+                <span>Amount</span>
+              </th>
+              <th class="ok-table-cell accounts-box-body__movements-header-second ok-table-cell--header">
+                <span>Balance</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="last-movements-table__body">
+            ${tableRows}
+          </tbody>
+        </table>
+        <div class="accounts-box-body__link-container">
+          <a id="lnkbtnAccountDetails0" class="ok-link ok-link--complementary ok-link--inverse ok-link--complementary-inverse" href="/myprofile/accounts/6959847961/movements">
+            <span class="ok-link__content">View account details</span>
+            <i class="ok-link__icon--right icon-siguiente"></i>
+          </a>
+        </div>
+      `);
+    }
+
+    // Write the updated HTML back to file
+    await fs.writeFile(filePath, $.html());
+
+    console.log(`Direct debits updated successfully for ${fileType}`);
+
+    res.json({
+      success: true,
+      message: `Direct debits updated successfully. ${
+        showEmptyState
+          ? "Showing empty state."
+          : `Updated ${transactions.length} transactions.`
+      }`,
+    });
+  } catch (error) {
+    console.error("Error updating direct debits:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
+/**
  * Health check endpoint
  */
 app.get("/api/health", (req, res) => {
@@ -1213,6 +1425,71 @@ app.get("/api/health", (req, res) => {
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "admin-dashboard.html"));
 });
+
+/**
+ * Utility functions for direct debit management
+ */
+function convertDateToISO(dateText) {
+  // Convert "Jul 14" format to "07-14"
+  const months = {
+    Jan: "01",
+    Feb: "02",
+    Mar: "03",
+    Apr: "04",
+    May: "05",
+    Jun: "06",
+    Jul: "07",
+    Aug: "08",
+    Sep: "09",
+    Oct: "10",
+    Nov: "11",
+    Dec: "12",
+  };
+
+  const parts = dateText.split(" ");
+  if (parts.length === 2) {
+    const month = months[parts[0]];
+    const day = parts[1].padStart(2, "0");
+    return `${month}-${day}`;
+  }
+  return "01-01"; // fallback
+}
+
+function formatTransactionDate(dateString) {
+  // Convert "2024-07-14T12:00:00Z" to "Jul 14"
+  const date = new Date(dateString);
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  return `${months[date.getMonth()]} ${date.getDate()}`;
+}
+
+function getCategoryIconUrl(category) {
+  // Map categories to their icon URLs
+  const categoryMap = {
+    category_1:
+      "https://www.openbank.es/assets/static/images/categories/icons/category_1.png",
+    category_5:
+      "https://www.openbank.es/assets/static/images/categories/icons/category_5.png",
+    category_9:
+      "https://www.openbank.es/assets/static/images/categories/icons/category_9.png",
+    category_12:
+      "https://www.openbank.es/assets/static/images/categories/icons/category_12.png",
+  };
+
+  return categoryMap[category] || categoryMap["category_9"];
+}
 
 /**
  * Error handling middleware
