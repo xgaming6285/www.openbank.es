@@ -1,0 +1,9 @@
+window.__ENVIRONMENT__ = 'prod';
+window.__ENV__ = 'PRODUCCION';
+window.__PUBLIC_URL__='https://www.openbank.es'
+window.__BASE_HOST__ ='PRODUCCION';
+window.__BASE_HOST_PRIVADA__ ='';
+window.__DEBUG_MODE__='';
+window.__DYNATRACE_URL__='https://js-cdn.dynatrace.com/jstag/1623d230d17/bf38291xdu/50d127fa913d62c9_complete.js';
+window.__BIOCATCH_SCRIPT_URL__ = 'https://bcdn.openbank.com/scripts/8013fd3e/8013fd3e.js';
+

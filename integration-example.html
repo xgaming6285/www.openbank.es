@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenBank Cards - JSON Configuration Example</title>
+    
+    <!-- Include your existing styles -->
+    <link rel="stylesheet" href="account-styles.css">
+    
+    <!-- Include the new data interface styles -->
+    <link rel="stylesheet" href="css/data-interface.css">
+    
+    <style>
+        /* Example integration styles */
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .section {
+            margin: 40px 0;
+        }
+        
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #002b45;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #002b45;
+            padding-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <h1>OpenBank Cards - Dynamic Data Demo</h1>
+        <p>This example shows how to use the JSON configuration system with your existing OpenBank HTML.</p>
+
+        <!-- Quick Actions Panel -->
+        <div class="quick-actions">
+            <h3>Quick Data Manipulation</h3>
+            <div class="quick-actions-grid">
+                <button class="data-action-btn data-action-btn--primary" 
+                        data-action="edit-balance" 
+                        data-account-id="acc_main">
+                    Edit Main Account Balance
+                </button>
+                
+                <button class="data-action-btn data-action-btn--warning" 
+                        data-action="toggle-card" 
+                        data-card-id="card_001">
+                    Toggle Debit Card
+                </button>
+                
+                <button class="data-action-btn data-action-btn--success" 
+                        data-action="add-transaction" 
+                        data-account-id="acc_main">
+                    Add Transaction
+                </button>
+                
+                <button class="data-action-btn data-action-btn--danger" 
+                        data-action="reset-config" 
+                        data-config-name="accounts">
+                    Reset Account Data
+                </button>
+                
+                <button class="data-action-btn" onclick="window.DataInterface.exportAllData()">
+                    Export All Data
+                </button>
+            </div>
+        </div>
+
+        <!-- Accounts Section -->
+        <div class="section">
+            <h2 class="section-title">Accounts</h2>
+            <div id="accounts-container">
+                <!-- Accounts will be loaded dynamically -->
+            </div>
+        </div>
+
+        <!-- Cards Section -->
+        <div class="section">
+            <h2 class="section-title">Cards</h2>
+            <div id="cards-container">
+                <!-- Cards will be loaded dynamically -->
+            </div>
+        </div>
+
+        <!-- Transactions Section -->
+        <div class="section">
+            <h2 class="section-title">Recent Transactions</h2>
+            <div class="transaction-list" data-transaction-list>
+                <!-- Transactions will be loaded dynamically -->
+            </div>
+        </div>
+
+        <!-- Settings Form Example -->
+        <div class="section">
+            <h2 class="section-title">Live Settings</h2>
+            <div class="data-form">
+                <div class="form-group">
+                    <label class="form-label">Language</label>
+                    <select class="form-input" 
+                            data-live-update 
+                            data-config-name="settings" 
+                            data-property-path="userPreferences.profile.language">
+                        <option value="en">English</option>
+                        <option value="es">Español</option>
+                        <option value="fr">Français</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" 
+                               class="form-checkbox"
+                               data-live-update 
+                               data-config-name="settings" 
+                               data-property-path="userPreferences.notifications.email.enabled">
+                        Email Notifications
+                    </label>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Session Timeout (minutes)</label>
+                    <input type="number" 
+                           class="form-input"
+                           data-live-update 
+                           data-config-name="settings" 
+                           data-property-path="userPreferences.security.sessionTimeout"
+                           min="5" max="60">
+                </div>
+            </div>
+        </div>
+
+        <!-- File Import Section -->
+        <div class="section">
+            <h2 class="section-title">Data Import/Export</h2>
+            <div class="data-form">
+                <div class="form-group">
+                    <label class="form-label">Import Data</label>
+                    <input type="file" 
+                           class="form-input" 
+                           id="import-file" 
+                           accept=".json">
+                    <button class="data-action-btn data-action-btn--primary" onclick="handleImport()">
+                        Import JSON Data
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Developer Console -->
+        <div class="section">
+            <h2 class="section-title">Developer Console</h2>
+            <div class="data-form">
+                <p>Open browser console to interact with the data directly:</p>
+                <pre style="background: #f8f9fa; padding: 16px; border-radius: 8px; overflow-x: auto;">
+// Examples:
+await OpenBankData.updateAccountBalance('acc_main', 3000);
+await OpenBankData.addTransaction({accountId: 'acc_main', amount: -50, description: 'Test Purchase'});
+await OpenBankUtils.toggleCard('card_001');
+await ConfigManager.updateConfigProperty('settings', 'userPreferences.dashboard.theme.mode', 'dark');
+
+// Export data
+ConfigManager.exportConfig('all');
+                </pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include the configuration management scripts -->
+    <script src="js/config-manager.js"></script>
+    <script src="js/data-manipulation-interface.js"></script>
+
+    <script>
+        // Initialize the demo
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Load all configurations
+                await ConfigManager.loadAllConfigs();
+                
+                // Render accounts
+                await renderAccounts();
+                
+                // Render cards
+                await renderCards();
+                
+                // Render transactions
+                await renderTransactions();
+                
+                // Load settings values
+                await loadSettingsValues();
+                
+                console.log('Demo initialized successfully');
+            } catch (error) {
+                console.error('Error initializing demo:', error);
+            }
+        });
+
+        // Render accounts
+        async function renderAccounts() {
+            const accounts = await OpenBankData.getAccounts();
+            const container = document.getElementById('accounts-container');
+            
+            container.innerHTML = accounts.map(account => `
+                <div class="account-card">
+                    <div class="account-card-header">
+                        <div>
+                            <h3 class="account-name">${account.name}</h3>
+                            <div class="account-number">${account.accountNumber}</div>
+                        </div>
+                        <div class="account-balance">
+                            <div class="balance-label">Available Balance</div>
+                            <div class="balance-display" data-account-balance="${account.id}">
+                                <span class="balance-currency">€</span>${account.balance.toLocaleString('es-ES', {minimumFractionDigits: 2})}
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 8px; margin-top: 16px;">
+                        <button class="data-action-btn data-action-btn--primary" 
+                                data-action="edit-balance" 
+                                data-account-id="${account.id}">
+                            Edit Balance
+                        </button>
+                        <button class="data-action-btn" 
+                                data-action="add-transaction" 
+                                data-account-id="${account.id}">
+                            Add Transaction
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render cards
+        async function renderCards() {
+            const cards = await OpenBankData.getCards();
+            const container = document.getElementById('cards-container');
+            
+            container.innerHTML = cards.map(card => `
+                <div class="openbank-card">
+                    <div class="card-header">
+                        <div class="card-type">${card.cardTypeId.replace('_', ' ')}</div>
+                        <div class="card-status card-status--${card.status}" data-card-status="${card.id}">
+                            ${card.status}
+                        </div>
+                    </div>
+                    <div class="card-number">${card.cardNumber}</div>
+                    <div class="card-footer">
+                        <div class="card-holder">
+                            <span class="card-holder-label">CARD HOLDER</span>
+                            ${card.holderName}
+                        </div>
+                        <div class="card-expiry">
+                            <span class="card-expiry-label">VALID THRU</span>
+                            ${card.expiryDate}
+                        </div>
+                    </div>
+                    <div style="margin-top: 16px;">
+                        <button class="data-action-btn" 
+                                data-action="toggle-card" 
+                                data-card-id="${card.id}">
+                            ${card.status === 'active' ? 'Block' : 'Activate'} Card
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render transactions
+        async function renderTransactions() {
+            const transactions = await OpenBankData.getTransactions();
+            const container = document.querySelector('[data-transaction-list]');
+            
+            window.DataInterface.renderTransactions(container, transactions);
+        }
+
+        // Load settings values
+        async function loadSettingsValues() {
+            const settings = await OpenBankData.getUserSettings();
+            
+            // Set language select
+            const langSelect = document.querySelector('[data-property-path="userPreferences.profile.language"]');
+            if (langSelect) langSelect.value = settings.profile.language;
+            
+            // Set email notifications checkbox
+            const emailCheck = document.querySelector('[data-property-path="userPreferences.notifications.email.enabled"]');
+            if (emailCheck) emailCheck.checked = settings.notifications.email.enabled;
+            
+            // Set session timeout
+            const sessionInput = document.querySelector('[data-property-path="userPreferences.security.sessionTimeout"]');
+            if (sessionInput) sessionInput.value = settings.security.sessionTimeout;
+        }
+
+        // Handle file import
+        function handleImport() {
+            const fileInput = document.getElementById('import-file');
+            const file = fileInput.files[0];
+            
+            if (file) {
+                window.DataInterface.importData(file);
+            } else {
+                alert('Please select a JSON file to import');
+            }
+        }
+
+        // Observer examples - listen to data changes
+        ConfigManager.observe('accounts', (data) => {
+            console.log('Accounts data updated:', data);
+            // Refresh UI or trigger specific actions
+        });
+
+        ConfigManager.observe('cards', (data) => {
+            console.log('Cards data updated:', data);
+        });
+
+        // Global utility functions for easy access
+        window.quickBalance = (accountId, amount) => OpenBankUtils.updateBalance(accountId, amount);
+        window.quickTransaction = (accountId, amount, desc) => OpenBankUtils.addQuickTransaction(accountId, amount, desc);
+    </script>
+</body>
+</html>

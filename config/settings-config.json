@@ -1,0 +1,131 @@
+{
+  "userPreferences": {
+    "profile": {
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "john.doe@email.com",
+      "phone": "+34 600 123 456",
+      "language": "es",
+      "dateFormat": "DD/MM/YYYY",
+      "currency": "EUR",
+      "timezone": "Europe/Madrid"
+    },
+    "dashboard": {
+      "defaultView": "overview",
+      "showBalances": true,
+      "showRecentTransactions": true,
+      "transactionLimit": 10,
+      "widgetOrder": [
+        "account_summary",
+        "recent_transactions",
+        "cards_overview",
+        "products_showcase",
+        "financial_goals"
+      ],
+      "theme": {
+        "mode": "light",
+        "primaryColor": "#002b45",
+        "accentColor": "#d4af37"
+      }
+    },
+    "security": {
+      "twoFactorAuth": true,
+      "biometricLogin": true,
+      "sessionTimeout": 15,
+      "loginNotifications": true,
+      "deviceTrust": {
+        "enabled": true,
+        "trustedDevices": [
+          {
+            "id": "device_001",
+            "name": "iPhone 13 Pro",
+            "lastUsed": "2024-01-15T10:30:00Z",
+            "location": "Madrid, Spain"
+          }
+        ]
+      }
+    },
+    "notifications": {
+      "email": {
+        "enabled": true,
+        "frequency": "immediate",
+        "types": [
+          "transaction_alerts",
+          "security_notifications",
+          "account_statements",
+          "promotional_offers",
+          "system_maintenance"
+        ]
+      },
+      "push": {
+        "enabled": true,
+        "types": [
+          "transaction_alerts",
+          "security_alerts",
+          "payment_reminders",
+          "budget_notifications"
+        ]
+      },
+      "sms": {
+        "enabled": true,
+        "types": [
+          "security_codes",
+          "large_transactions",
+          "card_blocked"
+        ]
+      }
+    },
+    "privacy": {
+      "dataSharing": false,
+      "marketingCommunications": true,
+      "analyticsTracking": true,
+      "cookiePreferences": {
+        "necessary": true,
+        "functional": true,
+        "analytics": true,
+        "marketing": false
+      }
+    }
+  },
+  "systemSettings": {
+    "maintenance": {
+      "scheduledDowntime": null,
+      "emergencyMaintenance": false,
+      "lastUpdate": "2024-01-10T02:00:00Z"
+    },
+    "features": {
+      "mobilePayments": true,
+      "internationalTransfers": true,
+      "cryptoServices": false,
+      "investmentAdvice": true,
+      "chatSupport": true
+    },
+    "limits": {
+      "dailyTransferLimit": 10000,
+      "monthlyTransferLimit": 50000,
+      "maxLoginAttempts": 3,
+      "sessionDuration": 900
+    },
+    "integrations": {
+      "applePay": true,
+      "googlePay": true,
+      "paypal": false,
+      "bizum": true
+    }
+  },
+  "applicationConfig": {
+    "version": "2.4.1",
+    "environment": "production",
+    "apiEndpoints": {
+      "accounts": "/api/v1/accounts",
+      "transactions": "/api/v1/transactions",
+      "cards": "/api/v1/cards",
+      "products": "/api/v1/products"
+    },
+    "cacheSettings": {
+      "accountsCache": 300,
+      "transactionsCache": 60,
+      "productsCache": 3600
+    }
+  }
+}

@@ -1,0 +1,167 @@
+{
+  "deposits": [
+    {
+      "id": "deposit_6m",
+      "name": "6-Month Open Deposit",
+      "type": "fixed_term",
+      "duration": 6,
+      "interestRate": 3.5,
+      "minimumAmount": 1000,
+      "maximumAmount": 100000,
+      "currency": "EUR",
+      "features": [
+        "guaranteed_rate",
+        "early_withdrawal_penalty",
+        "automatic_renewal"
+      ],
+      "fees": {
+        "opening": 0,
+        "maintenance": 0,
+        "early_withdrawal_penalty": 0.5
+      },
+      "description": "Get more out of your savings with our competitive 6-month deposit.",
+      "benefits": [
+        "No opening fees",
+        "Competitive interest rate",
+        "FDIC insured up to €100,000"
+      ],
+      "promotional": {
+        "isActive": true,
+        "bonusRate": 0.25,
+        "validUntil": "2024-03-31",
+        "conditions": ["new_customers", "minimum_5000"]
+      }
+    },
+    {
+      "id": "deposit_12m",
+      "name": "12-Month Savings Deposit",
+      "type": "fixed_term",
+      "duration": 12,
+      "interestRate": 4.0,
+      "minimumAmount": 5000,
+      "maximumAmount": 250000,
+      "currency": "EUR",
+      "features": [
+        "guaranteed_rate",
+        "compound_interest",
+        "partial_withdrawals"
+      ],
+      "fees": {
+        "opening": 0,
+        "maintenance": 0,
+        "partial_withdrawal": 10
+      },
+      "description": "Maximize your returns with our 12-month deposit offering excellent rates.",
+      "benefits": [
+        "Higher interest rate",
+        "Compound interest calculation",
+        "Flexible partial withdrawals"
+      ]
+    }
+  ],
+  "loans": [
+    {
+      "id": "personal_loan",
+      "name": "Personal Loan",
+      "type": "unsecured",
+      "interestRateFrom": 5.9,
+      "interestRateTo": 12.9,
+      "minimumAmount": 3000,
+      "maximumAmount": 60000,
+      "termMonths": [12, 24, 36, 48, 60, 72, 84, 96],
+      "features": [
+        "no_collateral_required",
+        "flexible_repayment",
+        "early_repayment_allowed",
+        "online_application"
+      ],
+      "fees": {
+        "origination": 0,
+        "early_repayment": 0,
+        "late_payment": 25
+      },
+      "requirements": {
+        "minimum_income": 1500,
+        "employment_months": 6,
+        "age_range": [18, 75],
+        "credit_score_minimum": 650
+      }
+    },
+    {
+      "id": "mortgage",
+      "name": "Home Mortgage",
+      "type": "secured",
+      "interestRateFrom": 2.8,
+      "interestRateTo": 4.5,
+      "minimumAmount": 50000,
+      "maximumAmount": 500000,
+      "termYears": [15, 20, 25, 30],
+      "ltvMaximum": 80,
+      "features": [
+        "fixed_variable_rates",
+        "early_repayment_allowed",
+        "rate_lock_option",
+        "first_time_buyer_programs"
+      ],
+      "fees": {
+        "origination": 0,
+        "appraisal": 300,
+        "early_repayment": 0.5
+      },
+      "requirements": {
+        "down_payment_minimum": 20,
+        "debt_to_income_maximum": 36,
+        "employment_months": 24,
+        "property_types": ["primary_residence", "second_home", "investment"]
+      }
+    }
+  ],
+  "investments": [
+    {
+      "id": "fund_conservative",
+      "name": "Conservative Growth Fund",
+      "type": "mutual_fund",
+      "category": "balanced",
+      "riskLevel": 3,
+      "minimumInvestment": 100,
+      "managementFee": 0.75,
+      "currency": "EUR",
+      "performance": {
+        "ytd": 4.2,
+        "oneYear": 6.8,
+        "threeYear": 5.1,
+        "fiveYear": 4.9
+      },
+      "allocation": {
+        "stocks": 40,
+        "bonds": 55,
+        "cash": 5
+      },
+      "features": [
+        "professional_management",
+        "diversified_portfolio",
+        "monthly_contributions",
+        "automatic_rebalancing"
+      ]
+    }
+  ],
+  "insurance": [
+    {
+      "id": "life_insurance",
+      "name": "Term Life Insurance",
+      "type": "term_life",
+      "coverageAmounts": [50000, 100000, 250000, 500000, 1000000],
+      "termLengths": [10, 15, 20, 25, 30],
+      "features": [
+        "level_premiums",
+        "conversion_option",
+        "accelerated_benefits",
+        "online_application"
+      ],
+      "ageRanges": {
+        "minimum": 18,
+        "maximum": 75
+      }
+    }
+  ]
+}

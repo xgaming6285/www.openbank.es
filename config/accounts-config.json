@@ -1,0 +1,98 @@
+{
+  "accounts": [
+    {
+      "id": "acc_main",
+      "accountNumber": "ES21 1234 5678 9012 3456 7890",
+      "accountType": "current_account",
+      "name": "Main Current Account",
+      "currency": "EUR",
+      "balance": 2847.65,
+      "availableBalance": 2847.65,
+      "status": "active",
+      "openedDate": "2023-03-15",
+      "features": {
+        "overdraft": {
+          "enabled": true,
+          "limit": 500.00,
+          "current_used": 0.00,
+          "interest_rate": 8.5
+        },
+        "direct_debits": true,
+        "international_transfers": true,
+        "mobile_payments": true
+      },
+      "fees": {
+        "maintenance": 0,
+        "transfer_national": 0,
+        "transfer_sepa": 0,
+        "transfer_international": 6.00
+      }
+    },
+    {
+      "id": "acc_savings",
+      "accountNumber": "ES21 1234 5678 9012 3456 7891",
+      "accountType": "savings_account",
+      "name": "High Yield Savings",
+      "currency": "EUR",
+      "balance": 15420.30,
+      "availableBalance": 15420.30,
+      "status": "active",
+      "openedDate": "2023-03-15",
+      "interestRate": 2.1,
+      "features": {
+        "automatic_savings": true,
+        "goal_tracking": true,
+        "round_up_savings": true
+      },
+      "savingsGoals": [
+        {
+          "id": "goal_vacation",
+          "name": "Summer Vacation 2024",
+          "targetAmount": 3000.00,
+          "currentAmount": 1250.00,
+          "targetDate": "2024-06-01",
+          "monthlyContribution": 200.00
+        }
+      ]
+    },
+    {
+      "id": "acc_credit",
+      "accountNumber": "CREDIT-LINE-001",
+      "accountType": "credit_line",
+      "name": "Credit Account",
+      "currency": "EUR",
+      "creditLimit": 5000.00,
+      "availableCredit": 4200.00,
+      "currentBalance": 800.00,
+      "status": "active",
+      "openedDate": "2023-06-10",
+      "interestRate": 15.9,
+      "minimumPayment": 25.00,
+      "paymentDueDate": "2024-02-15",
+      "features": {
+        "installment_plans": true,
+        "cash_advances": true,
+        "balance_transfers": true
+      }
+    }
+  ],
+  "accountSettings": {
+    "statements": {
+      "frequency": "monthly",
+      "delivery": "email",
+      "format": "pdf"
+    },
+    "notifications": {
+      "low_balance_threshold": 100.00,
+      "large_transaction_threshold": 500.00,
+      "monthly_summary": true
+    },
+    "autoSavings": {
+      "enabled": true,
+      "roundUpRule": "nearest_euro",
+      "transferDay": 1,
+      "fromAccount": "acc_main",
+      "toAccount": "acc_savings"
+    }
+  }
+}

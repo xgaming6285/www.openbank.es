@@ -1,0 +1,633 @@
+/**
+ * OpenBank Data Interface Styles
+ * Styles for data manipulation interface components
+ */
+
+/* Base responsive layout */
+* {
+    box-sizing: border-box;
+}
+
+.openbank-config-system {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0 10px;
+    overflow-x: hidden;
+}
+
+/* Notification System */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    max-width: 400px;
+    padding: 0;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 10000;
+    opacity: 0;
+    transform: translateX(100%);
+    animation: slideIn 0.3s ease-out forwards;
+}
+
+.notification-content {
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.notification--success {
+    background-color: #d4edda;
+    border-left: 4px solid #28a745;
+    color: #155724;
+}
+
+.notification--error {
+    background-color: #f8d7da;
+    border-left: 4px solid #dc3545;
+    color: #721c24;
+}
+
+.notification--info {
+    background-color: #d1ecf1;
+    border-left: 4px solid #17a2b8;
+    color: #0c5460;
+}
+
+.notification--warning {
+    background-color: #fff3cd;
+    border-left: 4px solid #ffc107;
+    color: #856404;
+}
+
+.notification-message {
+    flex: 1;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: inherit;
+    opacity: 0.7;
+    margin-left: 12px;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.notification-close:hover {
+    opacity: 1;
+}
+
+@keyframes slideIn {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Data Manipulation Buttons */
+.data-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    background: #fff;
+    color: #333;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin: 2px;
+    min-height: 36px;
+    text-align: center;
+    word-wrap: break-word;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.data-action-btn:hover {
+    background: #f8f9fa;
+    border-color: #ccc;
+    transform: translateY(-1px);
+}
+
+.data-action-btn--primary {
+    background: #002b45;
+    color: white;
+    border-color: #002b45;
+}
+
+.data-action-btn--primary:hover {
+    background: #003d5c;
+    border-color: #003d5c;
+}
+
+.data-action-btn--success {
+    background: #28a745;
+    color: white;
+    border-color: #28a745;
+}
+
+.data-action-btn--success:hover {
+    background: #218838;
+    border-color: #1e7e34;
+}
+
+.data-action-btn--danger {
+    background: #dc3545;
+    color: white;
+    border-color: #dc3545;
+}
+
+.data-action-btn--danger:hover {
+    background: #c82333;
+    border-color: #bd2130;
+}
+
+.data-action-btn--warning {
+    background: #ffc107;
+    color: #212529;
+    border-color: #ffc107;
+}
+
+.data-action-btn--warning:hover {
+    background: #e0a800;
+    border-color: #d39e00;
+}
+
+/* Card Status Indicators */
+.card-status {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.card-status--active {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.card-status--blocked {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.card-status--expired {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+/* Balance Display */
+.balance-display {
+    font-size: 24px;
+    font-weight: 700;
+    color: #002b45;
+    margin: 8px 0;
+}
+
+.balance-display--negative {
+    color: #dc3545;
+}
+
+.balance-display--positive {
+    color: #28a745;
+}
+
+.balance-currency {
+    font-size: 18px;
+    opacity: 0.8;
+    margin-right: 4px;
+}
+
+/* Transaction List */
+.transaction-list {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.transaction-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.2s ease;
+}
+
+.transaction-item:hover {
+    background-color: #f8f9fa;
+}
+
+.transaction-item:last-child {
+    border-bottom: none;
+}
+
+.transaction-info {
+    flex: 1;
+}
+
+.transaction-description {
+    display: block;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.transaction-date {
+    font-size: 12px;
+    color: #666;
+}
+
+.transaction-amount {
+    font-size: 16px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.transaction-amount.positive {
+    color: #28a745;
+    background-color: rgba(40, 167, 69, 0.1);
+}
+
+.transaction-amount.negative {
+    color: #dc3545;
+    background-color: rgba(220, 53, 69, 0.1);
+}
+
+/* Quick Action Panel */
+.quick-actions {
+    background: #f8f9fa;
+    padding: 16px;
+    border-radius: 8px;
+    margin: 16px 0;
+    border: 1px solid #dee2e6;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.quick-actions h3 {
+    margin: 0 0 12px 0;
+    color: #002b45;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 8px;
+}
+
+/* Form Elements */
+.data-form {
+    background: white;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin: 16px 0;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 500;
+    color: #333;
+}
+
+.form-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.2s ease;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #002b45;
+    box-shadow: 0 0 0 2px rgba(0, 43, 69, 0.1);
+}
+
+.form-checkbox {
+    margin-right: 8px;
+}
+
+/* Account Card */
+.account-card {
+    background: white;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e9ecef;
+    margin: 12px 0;
+    position: relative;
+    overflow: hidden;
+    max-width: 100%;
+}
+
+.account-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #002b45, #004d7a);
+}
+
+.account-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.account-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: #002b45;
+    margin: 0;
+}
+
+.account-number {
+    font-size: 12px;
+    color: #666;
+    font-family: monospace;
+}
+
+.account-balance {
+    text-align: right;
+}
+
+.balance-label {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 4px;
+}
+
+/* Card Component */
+.openbank-card {
+    background: linear-gradient(135deg, #002b45 0%, #004d7a 100%);
+    color: white;
+    padding: 16px;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 43, 69, 0.3);
+    margin: 12px 0;
+    position: relative;
+    overflow: hidden;
+    max-width: 100%;
+}
+
+.openbank-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+}
+
+.card-type {
+    font-size: 14px;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.card-logo {
+    width: 40px;
+    height: auto;
+    opacity: 0.9;
+}
+
+.card-number {
+    font-family: 'Courier New', monospace;
+    font-size: 18px;
+    letter-spacing: 4px;
+    margin: 16px 0;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.card-holder {
+    font-size: 14px;
+}
+
+.card-holder-label {
+    display: block;
+    font-size: 10px;
+    opacity: 0.7;
+    margin-bottom: 4px;
+}
+
+.card-expiry {
+    text-align: right;
+    font-size: 14px;
+}
+
+.card-expiry-label {
+    display: block;
+    font-size: 10px;
+    opacity: 0.7;
+    margin-bottom: 4px;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .openbank-config-system {
+        max-width: 100% !important;
+        margin: 10px !important;
+        padding: 0 10px !important;
+    }
+    
+    .quick-actions-grid {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 6px;
+    }
+    
+    .data-action-btn {
+        font-size: 11px;
+        padding: 6px 8px;
+    }
+}
+
+@media (max-width: 768px) {
+    .notification {
+        left: 10px;
+        right: 10px;
+        max-width: none;
+    }
+
+    .openbank-config-system {
+        margin: 5px !important;
+        padding: 0 5px !important;
+    }
+
+    .quick-actions {
+        padding: 12px;
+        margin: 8px 0;
+    }
+
+    .quick-actions-grid {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 4px;
+    }
+
+    .data-action-btn {
+        font-size: 10px;
+        padding: 6px 4px;
+        min-height: 32px;
+    }
+
+    .account-card, .openbank-card {
+        padding: 12px;
+        margin: 8px 0;
+    }
+
+    .account-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .account-balance {
+        text-align: left;
+        width: 100%;
+    }
+
+    .balance-display {
+        font-size: 20px;
+    }
+
+    .card-footer {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .card-expiry {
+        text-align: left;
+    }
+
+    .card-number {
+        font-size: 16px;
+        letter-spacing: 2px;
+    }
+
+    .section h2 {
+        font-size: 20px !important;
+    }
+
+    .data-form {
+        padding: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .openbank-config-system {
+        margin: 2px !important;
+        padding: 0 2px !important;
+    }
+    
+    .quick-actions-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 4px;
+    }
+
+    .data-action-btn {
+        font-size: 9px;
+        padding: 4px 2px;
+        min-height: 28px;
+    }
+
+    .account-card-header {
+        flex-direction: column;
+    }
+
+    .balance-display {
+        font-size: 18px;
+    }
+
+    .section h2 {
+        font-size: 18px !important;
+        margin-bottom: 12px !important;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .account-card {
+        background: #1a1a1a;
+        border-color: #333;
+        color: #fff;
+    }
+
+    .transaction-list {
+        background: #1a1a1a;
+    }
+
+    .transaction-item {
+        border-color: #333;
+    }
+
+    .transaction-item:hover {
+        background-color: #2a2a2a;
+    }
+
+    .quick-actions {
+        background: #1a1a1a;
+        border-color: #333;
+    }
+
+    .data-form {
+        background: #1a1a1a;
+    }
+
+    .form-input {
+        background: #2a2a2a;
+        border-color: #444;
+        color: #fff;
+    }
+}

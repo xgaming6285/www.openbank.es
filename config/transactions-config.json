@@ -1,0 +1,219 @@
+{
+  "recentTransactions": [
+    {
+      "id": "txn_001",
+      "accountId": "acc_main",
+      "date": "2024-01-15T14:32:00Z",
+      "amount": -45.67,
+      "description": "MERCADONA MADRID",
+      "category": "groceries",
+      "type": "card_payment",
+      "cardId": "card_001",
+      "merchant": {
+        "name": "Mercadona",
+        "category": "supermarket",
+        "location": "Madrid, Spain",
+        "mcc": "5411"
+      },
+      "balance": 2847.65,
+      "status": "completed"
+    },
+    {
+      "id": "txn_002", 
+      "accountId": "acc_main",
+      "date": "2024-01-14T09:15:00Z",
+      "amount": 2500.00,
+      "description": "SALARY DEPOSIT - COMPANY XYZ",
+      "category": "salary",
+      "type": "direct_deposit",
+      "balance": 2893.32,
+      "status": "completed",
+      "recurring": {
+        "isRecurring": true,
+        "frequency": "monthly",
+        "nextDate": "2024-02-14"
+      }
+    },
+    {
+      "id": "txn_003",
+      "accountId": "acc_main", 
+      "date": "2024-01-13T16:45:00Z",
+      "amount": -12.50,
+      "description": "NETFLIX.COM",
+      "category": "entertainment",
+      "type": "online_payment",
+      "merchant": {
+        "name": "Netflix",
+        "category": "streaming",
+        "website": "netflix.com"
+      },
+      "balance": 393.32,
+      "status": "completed",
+      "recurring": {
+        "isRecurring": true,
+        "frequency": "monthly",
+        "nextDate": "2024-02-13"
+      }
+    },
+    {
+      "id": "txn_004",
+      "accountId": "acc_main",
+      "date": "2024-01-12T11:20:00Z", 
+      "amount": -85.30,
+      "description": "REPSOL MADRID",
+      "category": "fuel",
+      "type": "card_payment",
+      "cardId": "card_001",
+      "merchant": {
+        "name": "Repsol",
+        "category": "gas_station",
+        "location": "Madrid, Spain",
+        "mcc": "5541"
+      },
+      "balance": 405.82,
+      "status": "completed"
+    },
+    {
+      "id": "txn_005",
+      "accountId": "acc_savings",
+      "date": "2024-01-12T00:00:00Z",
+      "amount": 200.00,
+      "description": "AUTOMATIC SAVINGS TRANSFER",
+      "category": "transfer",
+      "type": "internal_transfer",
+      "fromAccount": "acc_main",
+      "toAccount": "acc_savings",
+      "balance": 15420.30,
+      "status": "completed",
+      "recurring": {
+        "isRecurring": true,
+        "frequency": "monthly",
+        "nextDate": "2024-02-12"
+      }
+    }
+  ],
+  "pendingTransactions": [
+    {
+      "id": "txn_pending_001",
+      "accountId": "acc_main",
+      "date": "2024-01-15T18:00:00Z",
+      "amount": -67.89,
+      "description": "AMAZON PRIME",
+      "category": "online_shopping",
+      "type": "pending_authorization",
+      "estimatedCompletion": "2024-01-16T09:00:00Z",
+      "status": "pending"
+    }
+  ],
+  "scheduledTransactions": [
+    {
+      "id": "txn_scheduled_001",
+      "accountId": "acc_main",
+      "scheduledDate": "2024-01-20T09:00:00Z",
+      "amount": -850.00,
+      "description": "MONTHLY RENT PAYMENT",
+      "category": "housing",
+      "type": "scheduled_transfer",
+      "recipient": {
+        "name": "Property Management Co.",
+        "account": "ES21 9876 5432 1098 7654 3210"
+      },
+      "recurring": {
+        "isRecurring": true,
+        "frequency": "monthly",
+        "nextDate": "2024-02-20"
+      },
+      "status": "scheduled"
+    }
+  ],
+  "categories": {
+    "groceries": {
+      "name": "Groceries & Food",
+      "icon": "shopping-cart",
+      "color": "#4CAF50",
+      "budget": {
+        "monthly": 400.00,
+        "currentSpent": 145.67,
+        "remaining": 254.33
+      }
+    },
+    "fuel": {
+      "name": "Fuel & Transportation",
+      "icon": "local-gas-station",
+      "color": "#FF9800",
+      "budget": {
+        "monthly": 200.00,
+        "currentSpent": 85.30,
+        "remaining": 114.70
+      }
+    },
+    "entertainment": {
+      "name": "Entertainment & Media",
+      "icon": "movie",
+      "color": "#E91E63",
+      "budget": {
+        "monthly": 50.00,
+        "currentSpent": 12.50,
+        "remaining": 37.50
+      }
+    },
+    "housing": {
+      "name": "Housing & Utilities",
+      "icon": "home",
+      "color": "#2196F3",
+      "budget": {
+        "monthly": 1200.00,
+        "currentSpent": 0.00,
+        "remaining": 1200.00
+      }
+    },
+    "salary": {
+      "name": "Income & Salary",
+      "icon": "account-balance-wallet",
+      "color": "#4CAF50"
+    },
+    "transfer": {
+      "name": "Transfers & Savings",
+      "icon": "swap-horiz",
+      "color": "#9C27B0"
+    },
+    "online_shopping": {
+      "name": "Online Shopping",
+      "icon": "shopping-bag",
+      "color": "#FF5722"
+    }
+  },
+  "budgets": {
+    "monthly": {
+      "totalBudget": 1850.00,
+      "totalSpent": 243.47,
+      "remaining": 1606.53,
+      "categories": [
+        {
+          "categoryId": "groceries",
+          "budgeted": 400.00,
+          "spent": 145.67,
+          "percentage": 36.4
+        },
+        {
+          "categoryId": "fuel",
+          "budgeted": 200.00,
+          "spent": 85.30,
+          "percentage": 42.7
+        },
+        {
+          "categoryId": "entertainment",
+          "budgeted": 50.00,
+          "spent": 12.50,
+          "percentage": 25.0
+        },
+        {
+          "categoryId": "housing",
+          "budgeted": 1200.00,
+          "spent": 0.00,
+          "percentage": 0.0
+        }
+      ]
+    }
+  }
+}

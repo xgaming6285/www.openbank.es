@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Openbank Balance Manipulator - Admin Dashboard</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .dashboard {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .header {
+        background: linear-gradient(135deg, #31c3df 0%, #002b45 100%);
+        color: white;
+        padding: 30px;
+        text-align: center;
+      }
+
+      .header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+        font-weight: 300;
+      }
+
+      .header p {
+        opacity: 0.9;
+        font-size: 1.1rem;
+      }
+
+      .content {
+        padding: 40px;
+      }
+
+      .status {
+        margin-bottom: 30px;
+        padding: 15px;
+        border-radius: 8px;
+        font-weight: 500;
+      }
+
+      .status.success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+
+      .status.error {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+
+      .status.info {
+        background-color: #d1ecf1;
+        color: #0c5460;
+        border: 1px solid #bee5eb;
+      }
+
+      .balance-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 25px;
+        margin-bottom: 40px;
+      }
+
+      .balance-card {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 25px;
+        border: 1px solid #e9ecef;
+        transition: all 0.3s ease;
+      }
+
+      .balance-card:hover {
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+      }
+
+      .balance-card h3 {
+        color: #002b45;
+        margin-bottom: 15px;
+        font-size: 1.2rem;
+        font-weight: 600;
+      }
+
+      .balance-input-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .balance-input {
+        flex: 1;
+        padding: 12px;
+        border: 2px solid #e9ecef;
+        border-radius: 6px;
+        font-size: 1.1rem;
+        transition: border-color 0.3s ease;
+      }
+
+      .balance-input:focus {
+        outline: none;
+        border-color: #31c3df;
+      }
+
+      .currency {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #6c757d;
+      }
+
+      .current-value {
+        margin-top: 10px;
+        font-size: 0.9rem;
+        color: #6c757d;
+      }
+
+      .actions {
+        text-align: center;
+        padding: 30px 0;
+        border-top: 1px solid #e9ecef;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 15px 30px;
+        margin: 0 10px;
+        border: none;
+        border-radius: 6px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #31c3df, #002b45);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(49, 195, 223, 0.4);
+      }
+
+      .btn-secondary {
+        background: #6c757d;
+        color: white;
+      }
+
+      .btn-secondary:hover {
+        background: #5a6268;
+      }
+
+      .btn-success {
+        background: #28a745;
+        color: white;
+      }
+
+      .btn-success:hover {
+        background: #218838;
+      }
+
+      .loading {
+        display: none;
+        text-align: center;
+        padding: 20px;
+      }
+
+      .spinner {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #31c3df;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 15px;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .file-info {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 30px;
+        border-left: 4px solid #31c3df;
+      }
+
+      .file-info h4 {
+        color: #002b45;
+        margin-bottom: 10px;
+      }
+
+      .preview-section {
+        margin-top: 30px;
+        padding-top: 30px;
+        border-top: 1px solid #e9ecef;
+      }
+
+      .preview-section h3 {
+        margin-bottom: 20px;
+        color: #002b45;
+      }
+
+      .preview-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+      }
+
+      .preview-table th,
+      .preview-table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #dee2e6;
+      }
+
+      .preview-table th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+        color: #002b45;
+      }
+
+      .preview-table tr:hover {
+        background-color: #f8f9fa;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dashboard">
+      <div class="header">
+        <h1>🏦 Openbank Balance Manipulator</h1>
+        <p>Admin Dashboard - Modify Balance Values</p>
+      </div>
+
+      <div class="content">
+        <div class="file-info">
+          <h4>📁 File Selection</h4>
+          <div style="margin-bottom: 20px">
+            <label
+              for="fileSelector"
+              style="
+                display: block;
+                margin-bottom: 8px;
+                font-weight: 600;
+                color: #002b45;
+              "
+            >
+              Select HTML File to Edit:
+            </label>
+            <select
+              id="fileSelector"
+              class="balance-input"
+              style="height: 40px"
+            >
+              <option value="">Loading files...</option>
+            </select>
+          </div>
+          <p id="fileDescription">
+            Select a file to modify its balance values and save changes
+            directly.
+          </p>
+        </div>
+
+        <div id="status" class="status info" style="display: none">
+          Loading current balance values...
+        </div>
+
+        <div class="loading" id="loading">
+          <div class="spinner"></div>
+          <p>Processing changes...</p>
+        </div>
+
+        <div id="balanceFieldsContainer" class="balance-grid">
+          <!-- Dynamic fields will be generated here -->
+        </div>
+
+        <div class="preview-section">
+          <h3>📋 Changes Preview</h3>
+          <table class="preview-table">
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Current Value</th>
+                <th>New Value</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="previewTableBody">
+              <!-- Preview rows will be populated by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-secondary" onclick="loadCurrentValues()">
+            🔄 Refresh Current Values
+          </button>
+          <button class="btn btn-primary" onclick="previewChanges()">
+            👁️ Preview Changes
+          </button>
+          <button class="btn btn-success" onclick="applyChanges()">
+            💾 Apply Changes
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Global variables
+      let currentValues = {};
+      let currentFileType = "";
+      let availableFiles = [];
+      let fieldConfigs = {};
+
+      // Field configurations for different file types
+      fieldConfigs.openbank = [
+        {
+          key: "accountTotalBalance",
+          name: "💰 Account Total Balance",
+          type: "number",
+          currency: "€",
+          placeholder: "430.26",
+        },
+        {
+          key: "individualAccountBalance",
+          name: "🏛️ Individual Account Balance",
+          type: "number",
+          currency: "€",
+          placeholder: "0.00",
+        },
+        {
+          key: "totalSavingsBalance",
+          name: "💎 Total Savings Balance",
+          type: "number",
+          currency: "€",
+          placeholder: "0.00",
+        },
+        {
+          key: "monthlyExpenses",
+          name: "📊 Monthly Expenses (Agosto)",
+          type: "number",
+          currency: "€",
+          placeholder: "0.00",
+        },
+        {
+          key: "savingsInvestmentsTotal",
+          name: "📈 Savings & Investments Total",
+          type: "number",
+          currency: "€",
+          placeholder: "0.00",
+        },
+        {
+          key: "totalLending",
+          name: "💳 Total Lending",
+          type: "number",
+          currency: "€",
+          placeholder: "0.00",
+        },
+        {
+          key: "cardLastDigits",
+          name: "💳 Card Last 4 Digits (Global)",
+          type: "text",
+          placeholder: "...2150",
+        },
+        {
+          key: "avatarName",
+          name: "🌐 User Display Name (ALL HTML Files)",
+          type: "text",
+          placeholder: "Alfonso",
+        },
+      ];
+
+      fieldConfigs.directDebits = [
+        {
+          key: "accountsBalanceAmount",
+          name: "💰 Balance in your accounts",
+          type: "number",
+          currency: "€",
+          placeholder: "0.00",
+        },
+        {
+          key: "cardLastDigits",
+          name: "💳 Card Last 4 Digits",
+          type: "text",
+          placeholder: "...2150",
+        },
+        {
+          key: "availableAmount",
+          name: "💵 Available Amount",
+          type: "number",
+          currency: "€",
+          placeholder: "0.00",
+        },
+        {
+          key: "availableCurrency",
+          name: "💱 Available Currency",
+          type: "text",
+          placeholder: "€",
+        },
+        {
+          key: "avatarName",
+          name: "🌐 User Display Name (ALL HTML Files)",
+          type: "text",
+          placeholder: "Alfonso",
+        },
+      ];
+
+      fieldConfigs.cards = [
+        {
+          key: "cardLastDigits",
+          name: "💳 Card Last 4 Digits",
+          type: "text",
+          placeholder: "1704",
+        },
+        {
+          key: "avatarName",
+          name: "🌐 User Display Name (ALL HTML Files)",
+          type: "text",
+          placeholder: "Alfonso",
+        },
+      ];
+
+      fieldConfigs.transfers = [
+        {
+          key: "accountBalance",
+          name: "💰 Account Balance (Global)",
+          type: "number",
+          currency: "€",
+          placeholder: "0.00",
+        },
+        {
+          key: "cardLastDigits",
+          name: "💳 Card Last 4 Digits (Global)",
+          type: "text",
+          placeholder: "...2150",
+        },
+        {
+          key: "avatarName",
+          name: "🌐 User Display Name (ALL HTML Files)",
+          type: "text",
+          placeholder: "Alfonso",
+        },
+      ];
+
+      // Load list of available files
+      async function loadAvailableFiles() {
+        try {
+          const response = await fetch("/api/files");
+          const data = await response.json();
+
+          if (data.success) {
+            availableFiles = data.files;
+            populateFileSelector();
+          } else {
+            console.error("Error loading files:", data.error);
+          }
+        } catch (error) {
+          console.error("Error loading files:", error);
+        }
+      }
+
+      // Populate the file selector dropdown
+      function populateFileSelector() {
+        const selector = document.getElementById("fileSelector");
+        selector.innerHTML = '<option value="">Select a file...</option>';
+
+        availableFiles.forEach((file) => {
+          const option = document.createElement("option");
+          option.value = file.key;
+          option.textContent = file.displayName;
+          selector.appendChild(option);
+        });
+      }
+
+      // Handle file selection change
+      function onFileSelectionChange() {
+        const selector = document.getElementById("fileSelector");
+        const selectedFileType = selector.value;
+
+        if (selectedFileType) {
+          currentFileType = selectedFileType;
+          generateFieldsForFileType(selectedFileType);
+          loadCurrentValues();
+          updateFileDescription(selectedFileType);
+        } else {
+          currentFileType = "";
+          document.getElementById("balanceFieldsContainer").innerHTML = "";
+          document.getElementById("fileDescription").textContent =
+            "Select a file to modify its balance values and save changes directly.";
+        }
+      }
+
+      // Update file description
+      function updateFileDescription(fileType) {
+        const file = availableFiles.find((f) => f.key === fileType);
+        if (file) {
+          document.getElementById(
+            "fileDescription"
+          ).textContent = `Currently editing: ${file.displayName} (${file.filename})`;
+        }
+      }
+
+      // Generate dynamic fields based on file type
+      function generateFieldsForFileType(fileType) {
+        const container = document.getElementById("balanceFieldsContainer");
+        const fields = fieldConfigs[fileType] || [];
+
+        container.innerHTML = "";
+
+        fields.forEach((field) => {
+          const card = document.createElement("div");
+          card.className = "balance-card";
+
+          let inputHtml = "";
+          if (field.type === "number") {
+            inputHtml = `
+              <div class="balance-input-group">
+                <input
+                  type="number"
+                  step="0.01"
+                  class="balance-input"
+                  id="${field.key}"
+                  placeholder="${field.placeholder}"
+                />
+                ${
+                  field.currency
+                    ? `<span class="currency">${field.currency}</span>`
+                    : ""
+                }
+              </div>`;
+          } else {
+            inputHtml = `
+              <div class="balance-input-group">
+                <input
+                  type="text"
+                  class="balance-input"
+                  id="${field.key}"
+                  placeholder="${field.placeholder}"
+                  maxlength="50"
+                />
+              </div>`;
+          }
+
+          card.innerHTML = `
+            <h3>${field.name}</h3>
+            ${inputHtml}
+            <div class="current-value" id="current${field.key}">
+              Current: Loading...
+            </div>
+          `;
+
+          container.appendChild(card);
+        });
+
+        // Add event listeners to new fields
+        addFieldEventListeners();
+      }
+
+      // Add event listeners to dynamic fields
+      function addFieldEventListeners() {
+        document.querySelectorAll(".balance-input").forEach((input) => {
+          input.addEventListener("input", previewChanges);
+        });
+      }
+
+      // Load current balance values from the HTML file
+      async function loadCurrentValues() {
+        if (!currentFileType) {
+          showStatus("Please select a file first", "error");
+          return;
+        }
+
+        try {
+          showStatus("Loading current balance values...", "info");
+
+          const response = await fetch(
+            `/api/current-balances?fileType=${currentFileType}`
+          );
+          const data = await response.json();
+
+          if (data.success) {
+            currentValues = data.balances;
+            updateCurrentValueDisplay();
+            showStatus("Current values loaded successfully!", "success");
+          } else {
+            showStatus("Error loading current values: " + data.error, "error");
+          }
+        } catch (error) {
+          showStatus("Error loading current values: " + error.message, "error");
+        }
+      }
+
+      // Update the display of current values
+      function updateCurrentValueDisplay() {
+        const fields = fieldConfigs[currentFileType] || [];
+
+        fields.forEach((field) => {
+          const currentElement = document.getElementById(`current${field.key}`);
+          if (currentElement) {
+            const value = currentValues[field.key] || field.placeholder;
+            const formattedValue =
+              field.currency && field.type === "number"
+                ? `Current: ${value} ${field.currency}`
+                : `Current: ${value}`;
+            currentElement.textContent = formattedValue;
+          }
+        });
+      }
+
+      // Preview changes before applying
+      function previewChanges() {
+        if (!currentFileType) {
+          return;
+        }
+
+        const newValues = getNewValues();
+        const previewTableBody = document.getElementById("previewTableBody");
+        previewTableBody.innerHTML = "";
+
+        const fields = fieldConfigs[currentFileType] || [];
+
+        fields.forEach((field) => {
+          const row = document.createElement("tr");
+          const currentVal = currentValues[field.key] || field.placeholder;
+          const newVal = newValues[field.key] || currentVal;
+          const hasChanged = currentVal !== newVal;
+
+          // Format display values
+          let displayCurrentVal, displayNewVal;
+          if (field.currency && field.type === "number") {
+            displayCurrentVal = `${currentVal} ${field.currency}`;
+            displayNewVal = `${newVal} ${field.currency}`;
+          } else {
+            displayCurrentVal = currentVal;
+            displayNewVal = newVal;
+          }
+
+          row.innerHTML = `
+                     <td>${field.name}</td>
+                     <td>${displayCurrentVal}</td>
+                     <td>${displayNewVal}</td>
+                     <td style="color: ${hasChanged ? "#28a745" : "#6c757d"}">
+                         ${hasChanged ? "✅ Will Change" : "⏸️ No Change"}
+                     </td>
+                 `;
+          previewTableBody.appendChild(row);
+        });
+
+        showStatus(
+          'Preview updated! Review changes below and click "Apply Changes" to save.',
+          "info"
+        );
+      }
+
+      // Get new values from input fields
+      function getNewValues() {
+        const newValues = {};
+        const fields = fieldConfigs[currentFileType] || [];
+
+        fields.forEach((field) => {
+          const element = document.getElementById(field.key);
+          if (element) {
+            newValues[field.key] = element.value || currentValues[field.key];
+          }
+        });
+
+        return newValues;
+      }
+
+      // Apply changes to the HTML file
+      async function applyChanges() {
+        if (!currentFileType) {
+          showStatus("Please select a file first", "error");
+          return;
+        }
+
+        const newValues = getNewValues();
+        const file = availableFiles.find((f) => f.key === currentFileType);
+        const fileName = file ? file.filename : "the selected file";
+
+        // Show confirmation
+        if (
+          !confirm(
+            `Are you sure you want to apply these changes? This will modify the ${fileName} file.`
+          )
+        ) {
+          return;
+        }
+
+        try {
+          showLoading(true);
+          showStatus("Applying changes...", "info");
+
+          const response = await fetch("/api/update-balances", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              balances: newValues,
+              fileType: currentFileType,
+            }),
+          });
+
+          const data = await response.json();
+          showLoading(false);
+
+          if (data.success) {
+            showStatus(
+              `✅ Changes applied successfully! The ${fileName} file has been updated.`,
+              "success"
+            );
+            // Reload current values to reflect changes
+            setTimeout(() => {
+              loadCurrentValues();
+            }, 1000);
+          } else {
+            showStatus("❌ Error applying changes: " + data.error, "error");
+          }
+        } catch (error) {
+          showLoading(false);
+          showStatus("❌ Error applying changes: " + error.message, "error");
+        }
+      }
+
+      // Show status message
+      function showStatus(message, type) {
+        const statusDiv = document.getElementById("status");
+        statusDiv.textContent = message;
+        statusDiv.className = `status ${type}`;
+        statusDiv.style.display = "block";
+      }
+
+      // Show/hide loading spinner
+      function showLoading(show) {
+        document.getElementById("loading").style.display = show
+          ? "block"
+          : "none";
+      }
+
+      // Initialize dashboard
+      document.addEventListener("DOMContentLoaded", function () {
+        loadAvailableFiles();
+
+        // Add event listener for file selector
+        document
+          .getElementById("fileSelector")
+          .addEventListener("change", onFileSelectionChange);
+      });
+
+      // Note: Event listeners for fields are added dynamically in addFieldEventListeners()
+    </script>
+  </body>
+</html>

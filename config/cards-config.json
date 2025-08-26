@@ -1,0 +1,118 @@
+{
+  "cardTypes": [
+    {
+      "id": "debit_standard",
+      "name": "Openbank Debit Card",
+      "displayName": "Standard Debit",
+      "type": "debit",
+      "features": ["contactless", "international", "online_shopping", "atm_withdrawals"],
+      "fees": {
+        "monthly": 0,
+        "withdrawal_national": 0,
+        "withdrawal_international": 2.50,
+        "foreign_transaction": 0
+      },
+      "limits": {
+        "daily_withdrawal": 600,
+        "daily_payment": 3000,
+        "monthly_online": 5000
+      },
+      "design": {
+        "color": "#002b45",
+        "gradient": ["#002b45", "#004d7a"],
+        "logo": "/assets/logo_footer/bySantander.svg"
+      }
+    },
+    {
+      "id": "credit_gold",
+      "name": "Openbank Gold Credit Card",
+      "displayName": "Gold Credit",
+      "type": "credit",
+      "features": ["rewards", "travel_insurance", "purchase_protection", "installments", "cashback"],
+      "fees": {
+        "annual": 0,
+        "foreign_transaction": 0,
+        "cash_advance": 3.0,
+        "late_payment": 25
+      },
+      "rewards": {
+        "cashback_rate": 1.5,
+        "bonus_categories": {
+          "restaurants": 3.0,
+          "travel": 2.0,
+          "gas_stations": 2.0
+        }
+      },
+      "limits": {
+        "credit_limit": 5000,
+        "cash_advance_limit": 1000,
+        "daily_purchase": 3000
+      },
+      "design": {
+        "color": "#d4af37",
+        "gradient": ["#d4af37", "#ffd700"],
+        "logo": "/assets/logo_footer/bySantander.svg"
+      }
+    }
+  ],
+  "userCards": [
+    {
+      "id": "card_001",
+      "cardTypeId": "debit_standard",
+      "accountId": "acc_main",
+      "cardNumber": "**** **** **** 1234",
+      "holderName": "JOHN DOE",
+      "expiryDate": "12/26",
+      "status": "active",
+      "issuedDate": "2024-01-15",
+      "customSettings": {
+        "contactless": true,
+        "online_purchases": true,
+        "international_transactions": true,
+        "notifications": {
+          "transaction_alerts": true,
+          "limit_warnings": true,
+          "security_alerts": true
+        }
+      }
+    },
+    {
+      "id": "card_002",
+      "cardTypeId": "credit_gold",
+      "accountId": "acc_credit",
+      "cardNumber": "**** **** **** 5678",
+      "holderName": "JOHN DOE",
+      "expiryDate": "09/27",
+      "status": "active",
+      "issuedDate": "2023-06-10",
+      "currentBalance": 800.00,
+      "availableCredit": 4200.00,
+      "customSettings": {
+        "contactless": true,
+        "online_purchases": true,
+        "international_transactions": true,
+        "auto_pay": true,
+        "notifications": {
+          "transaction_alerts": true,
+          "payment_reminders": true,
+          "reward_notifications": true
+        }
+      }
+    }
+  ],
+  "cardServices": {
+    "cardControl": {
+      "enabled": true,
+      "features": ["temporary_block", "limit_adjustment", "location_based", "merchant_category_control"]
+    },
+    "digitalWallet": {
+      "supported": ["apple_pay", "google_pay", "samsung_pay"],
+      "enabled": true
+    },
+    "security": {
+      "fraud_monitoring": true,
+      "transaction_verification": true,
+      "biometric_authentication": true
+    }
+  }
+}
