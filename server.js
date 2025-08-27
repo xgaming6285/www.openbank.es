@@ -16,6 +16,10 @@ const HTML_FILES = {
 
 // Middleware
 app.use(express.json());
+
+// Simple static file serving - no interference
+app.use("/ok-ui-frame-es", express.static(path.join(__dirname, "ok-ui-frame-es")));
+
 app.use(express.static("."));
 
 // Balance field configurations for different HTML files
@@ -603,7 +607,6 @@ async function updateAvatarNameGlobally(newAvatarName) {
       ignore: [
         "node_modules/**",
         "**/node_modules/**",
-        "admin-dashboard.html", // Skip our own dashboard
         "integration-example.html", // Skip example files
         "**/*_files/**", // Skip cached/temp files directories
       ],
@@ -1644,10 +1647,10 @@ app.get("/api/health", (req, res) => {
 });
 
 /**
- * Serve admin dashboard
+ * Serve main index page
  */
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "admin-dashboard.html"));
+  res.sendFile(path.join(__dirname, "index.html"));
 });
 
 /**
@@ -1741,7 +1744,7 @@ app.use((req, res) => {
 // Start server
 app.listen(PORT, () => {
   console.log(`🏦 Openbank Balance Manipulator Server is running!`);
-  console.log(`📊 Admin Dashboard: http://localhost:${PORT}`);
+  console.log(`🏠 Main Page: http://localhost:${PORT}`);
   console.log(`🔗 API Health Check: http://localhost:${PORT}/api/health`);
   console.log(
     `📁 Supported HTML Files: ${Object.values(HTML_FILES).join(", ")}`
@@ -1749,7 +1752,8 @@ app.listen(PORT, () => {
   console.log(`⏰ Started at: ${new Date().toISOString()}`);
   console.log("");
   console.log("Available endpoints:");
-  console.log("  GET  /                    - Admin Dashboard");
+  console.log("  GET  /                    - Main Index Page");
+  console.log("  GET  /Openbank.html       - Openbank Banking Page");
   console.log("  GET  /api/health          - Health check");
   console.log("  GET  /api/current-balances - Get current balance values");
   console.log("  POST /api/update-balances  - Update balance values");
