@@ -1654,6 +1654,24 @@ app.get("/", (req, res) => {
 });
 
 /**
+ * Serve admin dashboard page
+ */
+app.get("/admin-dashboard.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "admin-dashboard.html"));
+});
+
+/**
+ * Alternative admin dashboard routes
+ */
+app.get("/admin-dashboard", (req, res) => {
+  res.sendFile(path.join(__dirname, "admin-dashboard.html"));
+});
+
+app.get("/admin", (req, res) => {
+  res.sendFile(path.join(__dirname, "admin-dashboard.html"));
+});
+
+/**
  * Utility functions for direct debit management
  */
 function convertDateToISO(dateText) {
@@ -1753,6 +1771,9 @@ app.listen(PORT, () => {
   console.log("");
   console.log("Available endpoints:");
   console.log("  GET  /                    - Main Index Page");
+  console.log("  GET  /admin-dashboard.html - Admin Dashboard");
+  console.log("  GET  /admin-dashboard     - Admin Dashboard (alternative)");
+  console.log("  GET  /admin               - Admin Dashboard (shortcut)");
   console.log("  GET  /Openbank.html       - Openbank Banking Page");
   console.log("  GET  /api/health          - Health check");
   console.log("  GET  /api/current-balances - Get current balance values");
