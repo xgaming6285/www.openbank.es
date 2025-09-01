@@ -1635,6 +1635,116 @@ app.post("/api/update-transfer-recipients", async (req, res) => {
 });
 
 /**
+ * Get security settings from config file
+ */
+app.get("/api/security-settings", async (req, res) => {
+  try {
+    console.log("Loading security settings from config...");
+    const configPath = path.join(__dirname, "config", "settings-config.json");
+    const configData = await fs.readFile(configPath, "utf8");
+    const config = JSON.parse(configData);
+
+    // Structure the response to match what the frontend expects
+    const securitySettings = {
+      accountDetailsVerification: config.userPreferences?.security?.accountDetailsVerification || {
+        enabled: true,
+        method: "sms",
+        codeLength: 6,
+        codeTimeout: 120,
+        allowedCodes: ["123456", "000000", "111111"],
+        customMessages: {
+          securityTitle: "Security Verification",
+          securityMessage: "You are about to access sensitive account information.",
+          securityNotice: "For your security, we need to verify your identity using your registered mobile device.",
+          phoneNumber: "****-****-**34",
+          codePrompt: "Enter the 6-digit code sent to your mobile:",
+          successMessage: "Verification Successful!",
+          errorMessage: "Invalid code. Please try again."
+        },
+        simulationSettings: {
+          sendDelay: 2000,
+          verifyDelay: 1500,
+          successRedirectDelay: 2000
+        }
+      }
+    };
+
+    res.json({
+      success: true,
+      settings: securitySettings,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error("Error loading security settings:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
+/**
+ * Update security settings in config file
+ */
+app.post("/api/update-security-settings", async (req, res) => {
+  try {
+    const { accountDetailsVerification } = req.body;
+
+    if (!accountDetailsVerification || typeof accountDetailsVerification !== "object") {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid accountDetailsVerification data provided",
+      });
+    }
+
+    console.log("Updating security settings...", accountDetailsVerification);
+
+    const configPath = path.join(__dirname, "config", "settings-config.json");
+    
+    // Read existing config
+    let config = {};
+    try {
+      const configData = await fs.readFile(configPath, "utf8");
+      config = JSON.parse(configData);
+    } catch (error) {
+      console.log("Creating new config file...");
+    }
+
+    // Merge the new security settings
+    if (!config.userPreferences) {
+      config.userPreferences = {};
+    }
+    if (!config.userPreferences.security) {
+      config.userPreferences.security = {};
+    }
+    config.userPreferences.security.accountDetailsVerification = accountDetailsVerification;
+    
+    // Update timestamp
+    config.lastUpdated = new Date().toISOString();
+
+    // Write updated config back to file
+    await fs.writeFile(configPath, JSON.stringify(config, null, 2), "utf8");
+
+    console.log("Security settings updated successfully");
+
+    res.json({
+      success: true,
+      message: "Security settings updated successfully",
+      settings: config,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error("Error updating security settings:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
+/**
  * Health check endpoint
  */
 app.get("/api/health", (req, res) => {
@@ -1778,6 +1888,8 @@ app.listen(PORT, () => {
   console.log("  GET  /api/health          - Health check");
   console.log("  GET  /api/current-balances - Get current balance values");
   console.log("  POST /api/update-balances  - Update balance values");
+  console.log("  GET  /api/security-settings - Get security configuration");
+  console.log("  POST /api/update-security-settings - Update security configuration");
   console.log("");
 });
 

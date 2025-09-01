@@ -461,6 +461,231 @@
         display: grid;
         gap: 15px;
       }
+
+      /* Security Management Styles */
+      .security-management {
+        margin-top: 30px;
+        padding-top: 30px;
+        border-top: 1px solid #e9ecef;
+      }
+
+      .security-management h3 {
+        color: #002b45;
+        margin-bottom: 20px;
+        font-size: 1.5rem;
+      }
+
+      .security-management-container {
+        display: grid;
+        gap: 25px;
+      }
+
+      .security-card {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 25px;
+        border: 1px solid #e9ecef;
+        transition: all 0.3s ease;
+      }
+
+      .security-card:hover {
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+      }
+
+      .security-card h4 {
+        color: #002b45;
+        margin: 0 0 15px 0;
+        font-size: 1.2rem;
+        font-weight: 600;
+      }
+
+      .security-card p {
+        color: #6c757d;
+        margin: 0 0 20px 0;
+        font-size: 0.9rem;
+      }
+
+      /* Toggle Switch */
+      .security-toggle {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 15px 0;
+      }
+
+      .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 24px;
+      }
+
+      .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: 0.3s;
+        border-radius: 24px;
+      }
+
+      .toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: 0.3s;
+        border-radius: 50%;
+      }
+
+      input:checked + .toggle-slider {
+        background-color: #31c3df;
+      }
+
+      input:checked + .toggle-slider:before {
+        transform: translateX(26px);
+      }
+
+      /* Verification Codes */
+      .codes-list {
+        margin: 20px 0;
+        min-height: 60px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 15px;
+        border: 2px dashed #dee2e6;
+        border-radius: 8px;
+        background: white;
+      }
+
+      .code-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #e9ecef;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-family: 'Monaco', 'Menlo', monospace;
+        font-size: 1rem;
+        font-weight: bold;
+        color: #002b45;
+        transition: all 0.3s ease;
+      }
+
+      .code-item:hover {
+        background: #dee2e6;
+      }
+
+      .code-item .code-value {
+        letter-spacing: 1px;
+      }
+
+      .code-item .remove-code {
+        background: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        font-size: 12px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+      }
+
+      .code-item .remove-code:hover {
+        background: #c82333;
+        transform: scale(1.1);
+      }
+
+      .add-code-input-group {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .add-code-input-group input {
+        flex: 1;
+        font-family: 'Monaco', 'Menlo', monospace;
+        letter-spacing: 2px;
+        text-align: center;
+        font-weight: bold;
+        font-size: 1.1rem;
+      }
+
+      /* Message and Timing Fields */
+      .message-fields,
+      .timing-fields {
+        display: grid;
+        gap: 15px;
+      }
+
+      .message-fields textarea {
+        resize: vertical;
+        min-height: 60px;
+        font-family: inherit;
+      }
+
+      .codes-list.empty {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6c757d;
+        font-style: italic;
+      }
+
+      .codes-list.empty:before {
+        content: "No verification codes configured";
+      }
+
+      /* Security Actions */
+      .security-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #e9ecef;
+      }
+
+      /* Responsive adjustments for security section */
+      @media (max-width: 768px) {
+        .security-management-container {
+          grid-template-columns: 1fr;
+        }
+        
+        .add-code-input-group {
+          flex-direction: column;
+        }
+        
+        .add-code-input-group input {
+          width: 100%;
+        }
+        
+        .codes-list {
+          justify-content: center;
+        }
+        
+        .security-actions {
+          flex-direction: column;
+        }
+      }
     </style>
   </head>
   <body>
@@ -594,6 +819,143 @@
           </div>
         </div>
 
+        <!-- Security Management Section -->
+        <div class="security-management" id="securitySection">
+          <h3>🔐 Security & Verification Settings</h3>
+          <div class="security-management-container">
+            
+            <!-- Security Status -->
+            <div class="security-status">
+              <div class="security-card">
+                <h4>📱 Account Details Verification</h4>
+                <div class="security-toggle">
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="verificationEnabled">
+                    <span class="toggle-slider"></span>
+                  </label>
+                  <span>Enable verification for account details access</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Verification Codes Management -->
+            <div class="codes-management">
+              <div class="security-card">
+                <h4>🔢 Verification Codes</h4>
+                <p>Manage the codes that users can enter for verification (for demo purposes)</p>
+                
+                <div class="codes-list" id="codesList">
+                  <!-- Codes will be populated here -->
+                </div>
+                
+                <div class="add-code-section">
+                  <div class="form-group">
+                    <label for="newCode">Add New Code:</label>
+                    <div class="add-code-input-group">
+                      <input 
+                        type="text" 
+                        id="newCode" 
+                        maxlength="6" 
+                        placeholder="123456"
+                        pattern="[0-9]{6}"
+                        class="balance-input"
+                      >
+                      <button class="btn btn-success btn-sm" onclick="addVerificationCode()">Add Code</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Security Messages Configuration -->
+            <div class="messages-config">
+              <div class="security-card">
+                <h4>💬 Custom Messages</h4>
+                <p>Customize the messages shown in the security verification modal</p>
+                
+                <div class="message-fields">
+                  <div class="form-group">
+                    <label for="securityTitle">Modal Title:</label>
+                    <input type="text" id="securityTitle" class="balance-input" placeholder="Security Verification">
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="securityMessage">Security Message:</label>
+                    <textarea id="securityMessage" class="balance-input" rows="2" placeholder="You are about to access sensitive account information."></textarea>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="securityNotice">Security Notice:</label>
+                    <textarea id="securityNotice" class="balance-input" rows="2" placeholder="For your security, we need to verify your identity..."></textarea>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="phoneNumber">Display Phone Number:</label>
+                    <input type="text" id="phoneNumber" class="balance-input" placeholder="****-****-**34">
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="codePrompt">Code Input Prompt:</label>
+                    <input type="text" id="codePrompt" class="balance-input" placeholder="Enter the 6-digit code sent to your mobile:">
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="successMessage">Success Message:</label>
+                    <input type="text" id="successMessage" class="balance-input" placeholder="Verification Successful!">
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="errorMessage">Error Message:</label>
+                    <input type="text" id="errorMessage" class="balance-input" placeholder="Invalid code. Please try again.">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Timing Settings -->
+            <div class="timing-config">
+              <div class="security-card">
+                <h4>⏱️ Timing Settings</h4>
+                <p>Configure delays and timeouts for the verification process</p>
+                
+                <div class="timing-fields">
+                  <div class="form-group">
+                    <label for="codeTimeout">Code Timeout (seconds):</label>
+                    <div class="balance-input-group">
+                      <input type="number" id="codeTimeout" class="balance-input" min="30" max="600" placeholder="120">
+                      <span class="currency">sec</span>
+                    </div>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="sendDelay">SMS Send Simulation Delay (ms):</label>
+                    <div class="balance-input-group">
+                      <input type="number" id="sendDelay" class="balance-input" min="500" max="10000" placeholder="2000">
+                      <span class="currency">ms</span>
+                    </div>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="verifyDelay">Verification Processing Delay (ms):</label>
+                    <div class="balance-input-group">
+                      <input type="number" id="verifyDelay" class="balance-input" min="500" max="5000" placeholder="1500">
+                      <span class="currency">ms</span>
+                    </div>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="successRedirectDelay">Success Redirect Delay (ms):</label>
+                    <div class="balance-input-group">
+                      <input type="number" id="successRedirectDelay" class="balance-input" min="1000" max="5000" placeholder="2000">
+                      <span class="currency">ms</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Transfer Recipients Management Section -->
         <div
           class="transfer-management"
@@ -698,6 +1060,13 @@
             style="display: none"
           >
             💸 Apply Transfer Changes
+          </button>
+          <button
+            class="btn btn-success"
+            id="applySecurityBtn"
+            onclick="applySecuritySettings()"
+          >
+            🔐 Apply Security Settings
           </button>
         </div>
       </div>
@@ -1846,6 +2215,222 @@
           showStatus("Error applying changes: " + error.message, "error");
         }
       }
+
+      // Security Management Functions
+      let currentSecuritySettings = {};
+      let verificationCodes = [];
+
+      // Load current security settings
+      async function loadSecuritySettings() {
+        try {
+          showStatus("Loading security settings...", "info");
+
+          const response = await fetch("/api/security-settings");
+          const data = await response.json();
+
+          if (data.success) {
+            currentSecuritySettings = data.settings;
+            populateSecurityForm();
+            showStatus("Security settings loaded successfully!", "success");
+          } else {
+            showStatus("Error loading security settings: " + data.error, "error");
+          }
+        } catch (error) {
+          showStatus("Error loading security settings: " + error.message, "error");
+        }
+      }
+
+      // Populate security form with current settings
+      function populateSecurityForm() {
+        const settings = currentSecuritySettings.accountDetailsVerification || {};
+        
+        // Enable/disable toggle
+        document.getElementById('verificationEnabled').checked = settings.enabled || false;
+        
+        // Verification codes
+        verificationCodes = settings.allowedCodes || ['123456', '000000'];
+        renderVerificationCodes();
+        
+        // Custom messages
+        const messages = settings.customMessages || {};
+        document.getElementById('securityTitle').value = messages.securityTitle || 'Security Verification';
+        document.getElementById('securityMessage').value = messages.securityMessage || 'You are about to access sensitive account information.';
+        document.getElementById('securityNotice').value = messages.securityNotice || 'For your security, we need to verify your identity using your registered mobile device.';
+        document.getElementById('phoneNumber').value = messages.phoneNumber || '****-****-**34';
+        document.getElementById('codePrompt').value = messages.codePrompt || 'Enter the 6-digit code sent to your mobile:';
+        document.getElementById('successMessage').value = messages.successMessage || 'Verification Successful!';
+        document.getElementById('errorMessage').value = messages.errorMessage || 'Invalid code. Please try again.';
+        
+        // Timing settings
+        const timing = settings.simulationSettings || {};
+        document.getElementById('codeTimeout').value = settings.codeTimeout || 120;
+        document.getElementById('sendDelay').value = timing.sendDelay || 2000;
+        document.getElementById('verifyDelay').value = timing.verifyDelay || 1500;
+        document.getElementById('successRedirectDelay').value = timing.successRedirectDelay || 2000;
+      }
+
+      // Render verification codes list
+      function renderVerificationCodes() {
+        const codesList = document.getElementById('codesList');
+        
+        if (verificationCodes.length === 0) {
+          codesList.className = 'codes-list empty';
+          codesList.innerHTML = '';
+          return;
+        }
+        
+        codesList.className = 'codes-list';
+        codesList.innerHTML = verificationCodes.map((code, index) => `
+          <div class="code-item">
+            <span class="code-value">${code}</span>
+            <button class="remove-code" onclick="removeVerificationCode(${index})" title="Remove code">×</button>
+          </div>
+        `).join('');
+      }
+
+      // Add new verification code
+      function addVerificationCode() {
+        const newCodeInput = document.getElementById('newCode');
+        const newCode = newCodeInput.value.trim();
+        
+        // Validate code
+        if (!/^\d{6}$/.test(newCode)) {
+          showStatus("Please enter a valid 6-digit code", "error");
+          return;
+        }
+        
+        // Check if code already exists
+        if (verificationCodes.includes(newCode)) {
+          showStatus("This code already exists", "error");
+          return;
+        }
+        
+        // Add code
+        verificationCodes.push(newCode);
+        renderVerificationCodes();
+        newCodeInput.value = '';
+        showStatus(`Code ${newCode} added successfully`, "success");
+      }
+
+      // Remove verification code
+      function removeVerificationCode(index) {
+        const removedCode = verificationCodes[index];
+        verificationCodes.splice(index, 1);
+        renderVerificationCodes();
+        showStatus(`Code ${removedCode} removed`, "info");
+      }
+
+      // Handle Enter key in add code input
+      function setupSecurityEventListeners() {
+        document.getElementById('newCode').addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+            addVerificationCode();
+          }
+        });
+        
+        // Auto-format code input
+        document.getElementById('newCode').addEventListener('input', function(e) {
+          // Only allow digits
+          this.value = this.value.replace(/\D/g, '');
+        });
+      }
+
+      // Get current security form data
+      function getSecurityFormData() {
+        return {
+          enabled: document.getElementById('verificationEnabled').checked,
+          method: 'sms',
+          codeLength: 6,
+          codeTimeout: parseInt(document.getElementById('codeTimeout').value) || 120,
+          allowedCodes: [...verificationCodes],
+          customMessages: {
+            securityTitle: document.getElementById('securityTitle').value.trim(),
+            securityMessage: document.getElementById('securityMessage').value.trim(),
+            securityNotice: document.getElementById('securityNotice').value.trim(),
+            phoneNumber: document.getElementById('phoneNumber').value.trim(),
+            codePrompt: document.getElementById('codePrompt').value.trim(),
+            successMessage: document.getElementById('successMessage').value.trim(),
+            errorMessage: document.getElementById('errorMessage').value.trim()
+          },
+          simulationSettings: {
+            sendDelay: parseInt(document.getElementById('sendDelay').value) || 2000,
+            verifyDelay: parseInt(document.getElementById('verifyDelay').value) || 1500,
+            successRedirectDelay: parseInt(document.getElementById('successRedirectDelay').value) || 2000
+          }
+        };
+      }
+
+      // Apply security settings
+      async function applySecuritySettings() {
+        const formData = getSecurityFormData();
+        
+        // Validation
+        if (formData.allowedCodes.length === 0) {
+          showStatus("Please add at least one verification code", "error");
+          return;
+        }
+        
+        if (!formData.customMessages.securityTitle) {
+          showStatus("Security title cannot be empty", "error");
+          return;
+        }
+        
+        // Confirm changes
+        if (!confirm("Are you sure you want to apply these security settings? This will update the verification system.")) {
+          return;
+        }
+        
+        try {
+          showLoading(true);
+          showStatus("Applying security settings...", "info");
+          
+          const response = await fetch("/api/update-security-settings", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              accountDetailsVerification: formData
+            }),
+          });
+          
+          const data = await response.json();
+          showLoading(false);
+          
+          if (data.success) {
+            showStatus("✅ Security settings applied successfully! Changes are now active.", "success");
+            // Reload settings to confirm changes
+            setTimeout(() => {
+              loadSecuritySettings();
+            }, 1000);
+          } else {
+            showStatus("❌ Error applying security settings: " + data.error, "error");
+          }
+        } catch (error) {
+          showLoading(false);
+          showStatus("❌ Error applying security settings: " + error.message, "error");
+        }
+      }
+
+      // Initialize security management on page load
+      function initializeSecurityManagement() {
+        setupSecurityEventListeners();
+        loadSecuritySettings();
+      }
+
+      // Update the existing DOMContentLoaded listener
+      const originalDOMContentLoaded = document.addEventListener;
+      document.addEventListener('DOMContentLoaded', function() {
+        loadAvailableFiles();
+
+        // Add event listener for file selector
+        document
+          .getElementById("fileSelector")
+          .addEventListener("change", onFileSelectionChange);
+        
+        // Initialize security management
+        initializeSecurityManagement();
+      });
 
       // Note: Event listeners for fields are added dynamically in addFieldEventListeners()
     </script>

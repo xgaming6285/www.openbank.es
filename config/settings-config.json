@@ -43,6 +43,31 @@
             "location": "Madrid, Spain"
           }
         ]
+      },
+      "accountDetailsVerification": {
+        "enabled": true,
+        "method": "sms",
+        "codeLength": 6,
+        "codeTimeout": 120,
+        "allowedCodes": [
+          "123456",
+          "000000",
+          "111111"
+        ],
+        "customMessages": {
+          "securityTitle": "Security Verification",
+          "securityMessage": "You are about to access sensitive account information.",
+          "securityNotice": "For your security, we need to verify your identity using your registered mobile device.",
+          "phoneNumber": "****-****-**55",
+          "codePrompt": "Enter the 6-digit code sent to your mobile:",
+          "successMessage": "Verification Successful!",
+          "errorMessage": "Invalid code. Please try again."
+        },
+        "simulationSettings": {
+          "sendDelay": 2000,
+          "verifyDelay": 1500,
+          "successRedirectDelay": 2000
+        }
       }
     },
     "notifications": {
@@ -127,5 +152,6 @@
       "transactionsCache": 60,
       "productsCache": 3600
     }
-  }
+  },
+  "lastUpdated": "2025-09-01T12:58:20.388Z"
 }
